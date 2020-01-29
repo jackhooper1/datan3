@@ -15,3 +15,8 @@ In this file I will list home assignments you need to to **before** coming to cl
 
 - Read ch.5 (Data transformation) from R for Data Science: https://r4ds.had.co.nz/transform.html
 - Do exercises 5.2.4, 5.3.1, 5.6.7 (and others if you have time)
+
+#### 5 February
+
+- Read ch.13 (Relational data) from R for Data Science: https://r4ds.had.co.nz/relational-data.html
+- Do exercises 13.2.1, 13.3.1, 13.4.6
