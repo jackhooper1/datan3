@@ -1,7 +1,7 @@
 ---
 title: 'Data Analysis 3: Class 3'
 author: "Alexey Bessudnov"
-date: "31 January 2019"
+date: "29 January 2020"
 output: github_document
 ---
 
@@ -16,7 +16,7 @@ Plan for today:
 - The **tidyverse** framework (https://www.tidyverse.org/).
 - Reading in data with **readr**.
 - Transforming data with **dplyr**.
-- Statistical assignment 1: questions.
+- Statistical assignment 1.
 - Homework for next week.
 
 Importing data: read ch.11 from R for Data Science (Data import): https://r4ds.had.co.nz/data-import.html and ch.2 from my website (Read data): http://abessudnov.net/dataanalysis3/readdata.html.
@@ -26,7 +26,7 @@ library(tidyverse)
 Data <- read_tsv("data/UKDA-6614-tab/tab/ukhls_wx/xwavedat.tab")
 ```
 
-This is a cross-wave data file with stable characteristics of individuals. See the codebook at https://www.understandingsociety.ac.uk/documentation/mainstage/dataset-documentation/wave/xwave/datafile/xwavedat.
+This is a cross-wave data file with stable characteristics of individuals. See the codebook at https://www.understandingsociety.ac.uk/documentation/mainstage/dataset-documentation/search/datafile/xwavedat.
 
 See the dplyr cheetsheet: https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf
 
