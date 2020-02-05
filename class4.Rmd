@@ -1,7 +1,7 @@
 ---
 title: 'Data Analysis 3: Week 4'
 author: "Alexey Bessudnov"
-date: "7 February 2019"
+date: "5 February 2020"
 output: github_document
 ---
 
@@ -15,7 +15,6 @@ knitr::opts_chunk$set(cache = TRUE)
 
 Plan for today:
 
-- Assignment 1
 - Relational data
 - Homework for next week
 
@@ -137,7 +136,6 @@ Aggr1 %>%
 
 
 3.
-
     a) Construct a table with the average age of women at childbirth in wave 8, the proportion of newborn children who were breastfed and the average newborn child's birthweight in kilograms (for children born between waves 7 and 8).
     b) Split the table by ethnic group for mothers from the following groups: White British, Indian, Pakistani, Bangladeshi, and African.
     c) Compare the results from a)  with the results from wave 2.
