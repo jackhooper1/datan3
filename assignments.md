@@ -16,11 +16,15 @@ https://github.com/datan3-2020/testAssignment
 
 Deadline: 4 February, 2pm
 
+https://github.com/datan3-2020/assignment1
+
 #### Statistical assignment 2
 
 10% of the final mark.
 
 Deadline: 11 February, 2pm
+
+https://github.com/datan3-2020/assignment2
 
 #### Statistical assignment 3
 
