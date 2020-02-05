@@ -47,7 +47,6 @@ Deadline: 3 March, 2pm.
 Deadline: 17 March, 2pm.
 
 
-
 #### Final statistical report
 
 50% of the final mark.
