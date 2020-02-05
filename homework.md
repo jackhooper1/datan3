@@ -20,3 +20,8 @@ In this file I will list home assignments you need to to **before** coming to cl
 
 - Read ch.13 (Relational data) from R for Data Science: https://r4ds.had.co.nz/relational-data.html
 - Do exercises 13.2.1, 13.3.1, 13.4.6
+
+#### 12 February
+
+- Read ch.12 (Tidy data) from R for Data Science: https://r4ds.had.co.nz/tidy-data.html
+- Do exercises 12.2.1, 12.3.3
