@@ -1,7 +1,7 @@
 ---
 title: 'Data Analysis 3: Week 5'
 author: "Alexey Bessudnov"
-date: "14 February 2019"
+date: "11 February 2020"
 output: github_document
 ---
 
@@ -14,9 +14,9 @@ knitr::opts_chunk$set(cache = TRUE)
 ```
 Plan for today:
 
-- Assignment 1: marks and feedback
-- Assignment 2
+- Assignment 1: solutions
 - Tidy data and reshaping
+- Assignment 3
 - Homework for next week
 
 ## Exercises
@@ -87,6 +87,7 @@ summary(lm(a_fimnnet_dv ~ a_sex_dv + a_age_dv + I(a_age_dv^2), WideNew))
 4. Reshape the data from the wide to long format (check http://abessudnov.net/dataanalysis3/tidy-data.html).
 
     ```{r}
+# this is last year's code
 Long <- Wide %>%
   # convert data into the "very long" format.
   gather(a_sex_dv:c_fimnnet_dv, key = "variable", value = "value") %>%
@@ -95,6 +96,14 @@ Long <- Wide %>%
   # convert into the format we need
   spread(key = variable, value = value)
 Long
+
+# Now you can use pivot_longer and pivot_wider
+
+Wide %>%
+  pivot_longer(a_sex_dv:c_fimnnet_dv, names_to = "variable", values_to = "value") %>%
+  separate(variable, into = c("wave", "variable"), sep = "_", extra = "merge") %>%
+  pivot_wider(names_from = variable, values_from = value)
+
 
     ```
 
@@ -123,7 +132,7 @@ Long %>%
 
     ```{r}
 # standardising column names across waves
-colnames(Ind3)<- colnames(Ind2) <- colnames(Ind1) <- c("pidp", "sex_dv", "age_dv", "fimnnet_dv")
+colnames(Ind3) <- colnames(Ind2) <- colnames(Ind1) <- c("pidp", "sex_dv", "age_dv", "fimnnet_dv")
 Ind1 %>%
         bind_rows(Ind2) %>%
         bind_rows(Ind3) %>%
