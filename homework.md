@@ -31,3 +31,10 @@ In this file I will list home assignments you need to to **before** coming to cl
 - Read ch.3 (Data visualisation) from R for Data Science: https://r4ds.had.co.nz/data-visualisation.html
 - Do exercises 3.2.4, 3.3.1, 3.5.1
 
+#### 26 February
+
+- Ch. 7 (Exploratory Data Analysis) from R for Data Science: https://r4ds.had.co.nz/exploratory-data-analysis.html
+- Ch. 28 (Graphics for Communication) from R for Data Science: https://r4ds.had.co.nz/graphics-for-communication.html
+
+
+
