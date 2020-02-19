@@ -1,7 +1,7 @@
 ---
 title: 'Data Analysis 3: Week 6'
 author: "Alexey Bessudnov"
-date: "21 February 2019"
+date: "19 February 2020"
 output: github_document
 ---
 
@@ -15,7 +15,6 @@ knitr::opts_chunk$set(cache = TRUE)
 Plan for today:
 
 - Assignment 2: solution
-- Assignment 3
 - Simple data visualisation 
 - Homework for next week
 
