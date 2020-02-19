@@ -52,7 +52,7 @@ Plan for today:
         ##  8 6.80e7        2       72        1001.        2       73       1008.         2
         ##  9 6.80e7        2       73        1089.        2       74       1532.         2
         ## 10 6.80e7        2       36         491.        2       38        187.         2
-        ## # … with 31,173 more rows, and 2 more variables: c_age_dv <dbl>,
+        ## # ... with 31,173 more rows, and 2 more variables: c_age_dv <dbl>,
         ## #   c_fimnnet_dv <dbl>
 
 2.  Calculate the average difference in monthly income between waves 1
@@ -163,31 +163,16 @@ Plan for today:
         ##  8 68006807 b         73       984.      2
         ##  9 68006807 c         74      1164.      2
         ## 10 68007487 a         57       400       2
-        ## # … with 93,539 more rows
+        ## # ... with 93,539 more rows
     
     ``` r
     # Now you can use pivot_longer and pivot_wider
     
-    Wide %>%
+    Long <- Wide %>%
       pivot_longer(a_sex_dv:c_fimnnet_dv, names_to = "variable", values_to = "value") %>%
       separate(variable, into = c("wave", "variable"), sep = "_", extra = "merge") %>%
       pivot_wider(names_from = variable, values_from = value)
     ```
-    
-        ## # A tibble: 93,549 x 5
-        ##        pidp wave  sex_dv age_dv fimnnet_dv
-        ##       <dbl> <chr>  <dbl>  <dbl>      <dbl>
-        ##  1 68004087 a          1     59       802.
-        ##  2 68004087 b          1     60      1277.
-        ##  3 68004087 c          1     61       914.
-        ##  4 68006127 a          2     39      1180.
-        ##  5 68006127 b          2     40      1116.
-        ##  6 68006127 c          2     41      1176.
-        ##  7 68006807 a          2     72       673 
-        ##  8 68006807 b          2     73       984.
-        ##  9 68006807 c          2     74      1164.
-        ## 10 68007487 a          2     57       400 
-        ## # … with 93,539 more rows
 
 5.  Estimate a model showing how income depends on age and sex for all
     three waves, adding dummy variables for wave. Remember that the
@@ -228,19 +213,19 @@ Plan for today:
     
         ## # A tibble: 93,549 x 7
         ## # Groups:   pidp [31,183]
-        ##        pidp wave  age_dv fimnnet_dv sex_dv lagIncome leadIncome
-        ##       <dbl> <chr>  <dbl>      <dbl>  <dbl>     <dbl>      <dbl>
-        ##  1 68004087 a         59       802.      1       NA      1277. 
-        ##  2 68004087 b         60      1277.      1      802.      914. 
-        ##  3 68004087 c         61       914.      1     1277.       NA  
-        ##  4 68006127 a         39      1180.      2       NA      1116. 
-        ##  5 68006127 b         40      1116.      2     1180.     1176. 
-        ##  6 68006127 c         41      1176.      2     1116.       NA  
-        ##  7 68006807 a         72       673       2       NA       984. 
-        ##  8 68006807 b         73       984.      2      673      1164. 
-        ##  9 68006807 c         74      1164.      2      984.       NA  
-        ## 10 68007487 a         57       400       2       NA        16.7
-        ## # … with 93,539 more rows
+        ##        pidp wave  sex_dv age_dv fimnnet_dv lagIncome leadIncome
+        ##       <dbl> <chr>  <dbl>  <dbl>      <dbl>     <dbl>      <dbl>
+        ##  1 68004087 a          1     59       802.       NA      1277. 
+        ##  2 68004087 b          1     60      1277.      802.      914. 
+        ##  3 68004087 c          1     61       914.     1277.       NA  
+        ##  4 68006127 a          2     39      1180.       NA      1116. 
+        ##  5 68006127 b          2     40      1116.     1180.     1176. 
+        ##  6 68006127 c          2     41      1176.     1116.       NA  
+        ##  7 68006807 a          2     72       673        NA       984. 
+        ##  8 68006807 b          2     73       984.      673      1164. 
+        ##  9 68006807 c          2     74      1164.      984.       NA  
+        ## 10 68007487 a          2     57       400        NA        16.7
+        ## # ... with 93,539 more rows
 
 7.  Use the three original data tables for waves 1 to 3 and combine them
     in the long format. (check *bind\_rows*). Now convert into the wide
@@ -268,7 +253,7 @@ Plan for today:
         ##  8  987365      2     20       692.
         ##  9  987365      2     21       497.
         ## 10 1114525      1     36      2247.
-        ## # … with 155,245 more rows
+        ## # ... with 155,245 more rows
     
     ``` r
     # Note that this data frame is unbalanced and includes all observations (i.e. people who took part in at least one of the three waves.)
