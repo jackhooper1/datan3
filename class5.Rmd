@@ -99,7 +99,7 @@ Long
 
 # Now you can use pivot_longer and pivot_wider
 
-Wide %>%
+Long <- Wide %>%
   pivot_longer(a_sex_dv:c_fimnnet_dv, names_to = "variable", values_to = "value") %>%
   separate(variable, into = c("wave", "variable"), sep = "_", extra = "merge") %>%
   pivot_wider(names_from = variable, values_from = value)
