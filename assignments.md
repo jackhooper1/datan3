@@ -40,6 +40,7 @@ https://github.com/datan3-2020/assignment3
 
 Deadline: 3 March, 2pm.
 
+https://github.com/datan3-2020/assignment4
 
 #### Statistical assignment 5
 
