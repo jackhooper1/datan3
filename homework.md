@@ -36,5 +36,7 @@ In this file I will list home assignments you need to to **before** coming to cl
 - Ch. 7 (Exploratory Data Analysis) from R for Data Science: https://r4ds.had.co.nz/exploratory-data-analysis.html
 - Ch. 28 (Graphics for Communication) from R for Data Science: https://r4ds.had.co.nz/graphics-for-communication.html
 
+#### 4 March
 
+- Ch. 19 (Functions) from R for Data Science: https://r4ds.had.co.nz/functions.html
 
