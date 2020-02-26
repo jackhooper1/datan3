@@ -6,9 +6,7 @@ For your final report you need to conduct an independent analysis of the Underst
 
 Please choose one of the following questions.
 
-[The questions below are for 2019. The questions for 2020 will be confirmed at a later point.]
-
-1. Political scientists argue that people's political preferences are usually stable over the life course. Conservative supporters rarely switch to Labour, and Labour supporters rarely become Conservative. Test this statement empirically with the Understanding Society data and explore the characteristics of people who do change their political preferences over time.
+1. Political scientists sometimes argue that people's political interest is usually stable over the life course. Test this statement empirically with the Understanding Society data. Check how average political interest changes at different points of electoral cycle.
 
 2. Do people become happier or unhappier after childbirth? Explore how satisfaction with life in general and different aspects of it changes after childbirth, for men and women.
 
