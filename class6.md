@@ -34,12 +34,63 @@ We will start with univariate distributions.
     ``` r
     ggplot(Data8,
        aes(x = h_fimnnet_dv)) +
-      geom_histogram(binwidth = 100) +
-      xlim(-100, 5000) + 
-      xlab("Net monthly personal income")
+      geom_histogram()
     ```
     
     ![](class6_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+    
+    ``` r
+    summary(Data8$h_fimnnet_dv)
+    ```
+    
+        ##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+        ## -53958.2    753.2   1300.0   1542.0   1972.8  89379.6
+    
+    ``` r
+    ggplot(Data8,
+       aes(x = h_fimnnet_dv)) +
+      geom_histogram() +
+      xlim(-100, 5000)
+    ```
+    
+    ![](class6_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
+    
+    ``` r
+    ggplot(Data8,
+       aes(x = h_fimnnet_dv)) +
+      geom_histogram(binwidth = 1000) +
+      xlim(-100, 5000)
+    ```
+    
+    ![](class6_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
+    
+    ``` r
+    ggplot(Data8,
+       aes(x = h_fimnnet_dv)) +
+      geom_histogram(binwidth = 1) +
+      xlim(-100, 5000)
+    ```
+    
+    ![](class6_files/figure-gfm/unnamed-chunk-2-4.png)<!-- -->
+    
+    ``` r
+    ggplot(Data8,
+       aes(x = h_fimnnet_dv)) +
+      geom_histogram(binwidth = 100) +
+      xlim(-100, 5000)
+    ```
+    
+    ![](class6_files/figure-gfm/unnamed-chunk-2-5.png)<!-- -->
+    
+    ``` r
+    ggplot(Data8,
+       aes(x = h_fimnnet_dv)) +
+      geom_histogram(binwidth = 100) +
+      xlim(-100, 5000) +
+      xlab("Net monthly personal income")
+    ```
+    
+    ![](class6_files/figure-gfm/unnamed-chunk-2-6.png)<!-- -->
     
     ``` r
     ggplot(Data8,
@@ -48,7 +99,7 @@ We will start with univariate distributions.
       xlim(-100, 5000)
     ```
     
-    ![](class6_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
+    ![](class6_files/figure-gfm/unnamed-chunk-2-7.png)<!-- -->
     
     ``` r
     ggplot(Data8,
@@ -57,7 +108,7 @@ We will start with univariate distributions.
       ylim(-100,5000)
     ```
     
-    ![](class6_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
+    ![](class6_files/figure-gfm/unnamed-chunk-2-8.png)<!-- -->
 
 3.  Visualise the distribution of sex with a bar graph.
     
@@ -95,102 +146,186 @@ We will start with univariate distributions.
     ```
     
     ![](class6_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
-
-Bivariate distributions.
-
-4.  Create a bar chart showing mean income by region.
     
     ``` r
-    Data8 <- Data8 %>%
-      mutate(region = recode(h_gor_dv,
-                         `-9` = NA_character_,
-                         `1` = "North East",
-                         `2` = "North West",
-                         `3` = "Yorkshire",
-                         `4` = "East Midlands",
-                         `5` = "West Midlands",
-                         `6` = "East of England",
-                         `7` = "London",
-                         `8` = "South East",
-                         `9` = "Souh West",
-                         `10` = "Wales",
-                         `11` = "Scotland",
-                         `12` = "Northern Ireland"))
-    byRegion <- Data8 %>%
-      filter(!is.na(region)) %>%
-      group_by(region) %>%
-      summarise(
-    medianIncome = median(h_fimnnet_dv, na.rm = TRUE)
-      )
-    
-    byRegion %>%
-    ggplot(
-      aes(x = reorder(region, medianIncome), y = medianIncome)
-      ) +
-      geom_bar(stat = "identity") +
-      xlab("") +
-      ylab("Median net monthly personal income") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
-    ```
-    
-    ![](class6_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
-
-5.  Make a dot plot showing the same information as above (without
-    splitting by sex). Sort regions in the descending order by mean
-    income.
-    
-    ``` r
-    byRegion %>%
-    ggplot(
-      aes(y = reorder(region, medianIncome), x = medianIncome)
-      ) +
-      geom_point(size = 3) +
-      xlab("Median net monthly personal income") +
-      ylab("")
-    ```
-    
-    ![](class6_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
-
-6.  Make a line chart showing median income by age.
-    
-    ``` r
-    byAge <- Data8 %>%
-      group_by(h_age_dv) %>%
-      summarise(
-    medianIncome = median(h_fimnnet_dv, na.rm = TRUE)
-      )
-    
-    byAge %>%
-        ggplot(aes(x = h_age_dv, y = medianIncome)) +
-        geom_line() +
-        geom_smooth() +
-        xlim(21,80) +
-        xlab("Age") +
-        ylab("Median income")
-    ```
-    
-    ![](class6_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
-    
-    ``` r
-    # Split by sex
-    
-    byAgeSex <- Data8 %>%
+    Data8 %>%
       mutate(h_sex_dv = ifelse(h_sex_dv == 1, "male",
                            ifelse(h_sex_dv == 2, "female", NA))) %>%
       filter(!is.na(h_sex_dv)) %>%
-      group_by(h_age_dv, h_sex_dv) %>%
-      summarise(
-    medianIncome = median(h_fimnnet_dv, na.rm = TRUE)
-      )
-    
-    byAgeSex %>%
-        ggplot(aes(x = h_age_dv, y = medianIncome, colour = h_sex_dv)) +
-        geom_line() +
-        geom_smooth() +
-        xlim(21,80) +
-        ylim(0,2500) +
-        xlab("Age") +
-        ylab("Median income")
+      count(h_sex_dv) %>%
+      mutate(perc = n / sum(n) * 100) %>%
+      ggplot(aes(x = "", y = perc, fill = h_sex_dv)) +
+    geom_bar(width = 1, stat = "identity") +
+    coord_polar("y", start = 0)
     ```
     
-    ![](class6_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
+    ![](class6_files/figure-gfm/unnamed-chunk-3-3.png)<!-- -->
+    
+    ``` r
+    Data8 %>%
+      count(h_gor_dv) %>%
+      mutate(perc = n / sum(n) * 100) %>%
+      ggplot(aes(x = "", y = perc, fill = h_gor_dv)) +
+    geom_bar(width = 1, stat = "identity") +
+    coord_polar("y", start = 0)
+    ```
+    
+    ![](class6_files/figure-gfm/unnamed-chunk-3-4.png)<!-- -->
+    
+    ``` r
+    Data8 %>%
+      ggplot(aes(x = h_gor_dv)) +
+    geom_bar()
+    ```
+    
+    ![](class6_files/figure-gfm/unnamed-chunk-3-5.png)<!-- -->
+
+<!-- Bivariate distributions. -->
+
+<!-- 4. Create a bar chart showing mean income by region. -->
+
+<!--     ```{r} -->
+
+<!-- Data8 <- Data8 %>% -->
+
+<!--   mutate(region = recode(h_gor_dv, -->
+
+<!--                          `-9` = NA_character_, -->
+
+<!--                          `1` = "North East", -->
+
+<!--                          `2` = "North West", -->
+
+<!--                          `3` = "Yorkshire", -->
+
+<!--                          `4` = "East Midlands", -->
+
+<!--                          `5` = "West Midlands", -->
+
+<!--                          `6` = "East of England", -->
+
+<!--                          `7` = "London", -->
+
+<!--                          `8` = "South East", -->
+
+<!--                          `9` = "Souh West", -->
+
+<!--                          `10` = "Wales", -->
+
+<!--                          `11` = "Scotland", -->
+
+<!--                          `12` = "Northern Ireland")) -->
+
+<!-- byRegion <- Data8 %>% -->
+
+<!--   filter(!is.na(region)) %>% -->
+
+<!--   group_by(region) %>% -->
+
+<!--   summarise( -->
+
+<!--     medianIncome = median(h_fimnnet_dv, na.rm = TRUE) -->
+
+<!--   ) -->
+
+<!-- byRegion %>% -->
+
+<!-- ggplot( -->
+
+<!--   aes(x = reorder(region, medianIncome), y = medianIncome) -->
+
+<!--   ) + -->
+
+<!--   geom_bar(stat = "identity") + -->
+
+<!--   xlab("") + -->
+
+<!--   ylab("Median net monthly personal income") + -->
+
+<!--   theme(axis.text.x = element_text(angle = 45, hjust = 1)) -->
+
+<!--     ``` -->
+
+<!-- 5. Make a dot plot showing the same information as above (without splitting by sex). Sort regions in the descending order by mean income. -->
+
+<!--     ```{r} -->
+
+<!-- byRegion %>% -->
+
+<!-- ggplot( -->
+
+<!--   aes(y = reorder(region, medianIncome), x = medianIncome) -->
+
+<!--   ) + -->
+
+<!--   geom_point(size = 3) + -->
+
+<!--   xlab("Median net monthly personal income") + -->
+
+<!--   ylab("") -->
+
+<!--     ``` -->
+
+<!-- 6. Make a line chart showing median income by age. -->
+
+<!--     ```{r} -->
+
+<!-- byAge <- Data8 %>% -->
+
+<!--   group_by(h_age_dv) %>% -->
+
+<!--   summarise( -->
+
+<!--     medianIncome = median(h_fimnnet_dv, na.rm = TRUE) -->
+
+<!--   ) -->
+
+<!-- byAge %>% -->
+
+<!--         ggplot(aes(x = h_age_dv, y = medianIncome)) + -->
+
+<!--         geom_line() + -->
+
+<!--         geom_smooth() + -->
+
+<!--         xlim(21,80) + -->
+
+<!--         xlab("Age") + -->
+
+<!--         ylab("Median income") -->
+
+<!-- # Split by sex -->
+
+<!-- byAgeSex <- Data8 %>% -->
+
+<!--   mutate(h_sex_dv = ifelse(h_sex_dv == 1, "male", -->
+
+<!--                            ifelse(h_sex_dv == 2, "female", NA))) %>% -->
+
+<!--   filter(!is.na(h_sex_dv)) %>% -->
+
+<!--   group_by(h_age_dv, h_sex_dv) %>% -->
+
+<!--   summarise( -->
+
+<!--     medianIncome = median(h_fimnnet_dv, na.rm = TRUE) -->
+
+<!--   ) -->
+
+<!-- byAgeSex %>% -->
+
+<!--         ggplot(aes(x = h_age_dv, y = medianIncome, colour = h_sex_dv)) + -->
+
+<!--         geom_line() + -->
+
+<!--         geom_smooth() + -->
+
+<!--         xlim(21,80) + -->
+
+<!--         ylim(0,2500) + -->
+
+<!--         xlab("Age") + -->
+
+<!--         ylab("Median income") -->
+
+<!--     ``` -->
