@@ -5,14 +5,124 @@ Alexey Bessudnov
 
 Plan for today:
 
-1.  Machine learning workshop at the RSS.
-2.  Exercises on data visualisation.
-3.  Homework for next week: data structures.
+1.  Assignment 3: solution.
+2.  Assignment 4.
+3.  Homework for next week: functions.
+4.  Exercises on data visualisation.
 
 Exercises:
 
-1.  Open the data from the youth questionnaire from wave 8.
-2.  Today we will be working with the variable on BMI (h\_ypbmi\_dv) and visualise the distribution of BMI by sex, age, and ethnic group.
+    ```r
+    library(tidyverse)
+    Data8 <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w8/h_indresp.tab")
+    Data8 <- Data8 %>%
+      select(pidp, h_sex_dv, h_age_dv, h_gor_dv, h_fimnnet_dv)
+    ```
+
+Bivariate distributions.
+
+1.  Create a bar chart showing mean income by region.
+    
+    ``` r
+    Data8 <- Data8 %>%
+      mutate(region = recode(h_gor_dv,
+                         `-9` = NA_character_,
+                         `1` = "North East",
+                         `2` = "North West",
+                         `3` = "Yorkshire",
+                         `4` = "East Midlands",
+                         `5` = "West Midlands",
+                         `6` = "East of England",
+                         `7` = "London",
+                         `8` = "South East",
+                         `9` = "Souh West",
+                         `10` = "Wales",
+                         `11` = "Scotland",
+                         `12` = "Northern Ireland"))
+    byRegion <- Data8 %>%
+      filter(!is.na(region)) %>%
+      group_by(region) %>%
+      summarise(
+    medianIncome = median(h_fimnnet_dv, na.rm = TRUE)
+      )
+    
+    byRegion %>%
+    ggplot(
+      aes(x = reorder(region, medianIncome), y = medianIncome)
+      ) +
+      geom_bar(stat = "identity") +
+      xlab("") +
+      ylab("Median net monthly personal income") +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    ```
+    
+    ![](class7_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+2.  Make a dot plot showing the same information as above (without
+    splitting by sex). Sort regions in the descending order by mean
+    income.
+    
+    ``` r
+    byRegion %>%
+    ggplot(
+      aes(y = reorder(region, medianIncome), x = medianIncome)
+      ) +
+      geom_point(size = 3) +
+      xlab("Median net monthly personal income") +
+      ylab("")
+    ```
+    
+    ![](class7_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+3.  Make a line chart showing median income by age.
+    
+    ``` r
+    byAge <- Data8 %>%
+      group_by(h_age_dv) %>%
+      summarise(
+    medianIncome = median(h_fimnnet_dv, na.rm = TRUE)
+      )
+    
+    byAge %>%
+        ggplot(aes(x = h_age_dv, y = medianIncome)) +
+        geom_line() +
+        geom_smooth() +
+        xlim(21,80) +
+        xlab("Age") +
+        ylab("Median income")
+    ```
+    
+    ![](class7_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+    
+    ``` r
+    # Split by sex
+    
+    byAgeSex <- Data8 %>%
+      mutate(h_sex_dv = ifelse(h_sex_dv == 1, "male",
+                           ifelse(h_sex_dv == 2, "female", NA))) %>%
+      filter(!is.na(h_sex_dv)) %>%
+      group_by(h_age_dv, h_sex_dv) %>%
+      summarise(
+    medianIncome = median(h_fimnnet_dv, na.rm = TRUE)
+      )
+    
+    byAgeSex %>%
+        ggplot(aes(x = h_age_dv, y = medianIncome, colour = h_sex_dv)) +
+        geom_line() +
+        geom_smooth() +
+        xlim(21,80) +
+        ylim(0,2500) +
+        xlab("Age") +
+        ylab("Median income")
+    ```
+    
+    ![](class7_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
+
+4.  Open the data from the youth questionnaire from wave 8. We will be
+    working with the variable on BMI (h\_ypbmi\_dv) and visualise the
+    distribution of BMI by sex, age, and ethnic group.
+
+<!-- end list -->
 
 ``` r
 library(tidyverse)
@@ -23,7 +133,7 @@ youth8 %>% pull(h_ypbmi_dv) %>% summary()
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##  -9.000  -9.000  -9.000   4.576  19.000  85.200
+    ##  -9.000  -9.000  -9.000  -2.477  -9.000  39.000
 
 ``` r
 youth8 <- youth8 %>%
@@ -33,7 +143,7 @@ youth8 %>% pull(bmi) %>% summary()
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-    ##    8.40   17.20   19.70   22.40   24.27   85.20    1856
+    ##   10.40   17.20   19.10   19.81   21.80   39.00    2531
 
 ``` r
 # simple histogram
@@ -46,7 +156,7 @@ youth8 %>%
   ylab("Number of observations")
 ```
 
-![](class7_files/figure-markdown_github/unnamed-chunk-1-1.png)
+![](class7_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
 # BBC style
@@ -61,9 +171,9 @@ youth8 %>%
   xlab("Body mass index")
 ```
 
-![](class7_files/figure-markdown_github/unnamed-chunk-1-2.png)
+![](class7_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
 
-BMI by sex.
+5.  BMI by sex.
 
 Boxplot:
 
@@ -77,8 +187,8 @@ youth8 %>% count(h_sex_dv, sex)
     ## # A tibble: 2 x 3
     ##   h_sex_dv sex        n
     ##      <dbl> <chr>  <int>
-    ## 1        1 male    1619
-    ## 2        2 female  1651
+    ## 1        1 male    1620
+    ## 2        2 female  1652
 
 ``` r
 youth8 %>%
@@ -88,9 +198,11 @@ youth8 %>%
   coord_flip()
 ```
 
-![](class7_files/figure-markdown_github/unnamed-chunk-2-1.png)
+![](class7_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-density by group
+6.  Density by group.
+
+<!-- end list -->
 
 ``` r
 youth8 %>%
@@ -98,7 +210,7 @@ youth8 %>%
   geom_histogram(position = "dodge")
 ```
 
-![](class7_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](class7_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
 youth8 %>%
@@ -106,7 +218,7 @@ youth8 %>%
   geom_histogram(bins = 50, position = "identity", alpha = 0.5)
 ```
 
-![](class7_files/figure-markdown_github/unnamed-chunk-3-2.png)
+![](class7_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->
 
 ``` r
 youth8 %>%
@@ -114,7 +226,7 @@ youth8 %>%
   geom_density()
 ```
 
-![](class7_files/figure-markdown_github/unnamed-chunk-3-3.png)
+![](class7_files/figure-gfm/unnamed-chunk-7-3.png)<!-- -->
 
 ``` r
 youth8 %>%
@@ -122,7 +234,7 @@ youth8 %>%
   geom_density()
 ```
 
-![](class7_files/figure-markdown_github/unnamed-chunk-3-4.png)
+![](class7_files/figure-gfm/unnamed-chunk-7-4.png)<!-- -->
 
 ``` r
 youth8 %>%
@@ -132,9 +244,11 @@ youth8 %>%
   scale_fill_manual(values = c("purple", "yellow"))
 ```
 
-![](class7_files/figure-markdown_github/unnamed-chunk-3-5.png)
+![](class7_files/figure-gfm/unnamed-chunk-7-5.png)<!-- -->
 
-Barplot with means.
+7.  Barplot with means.
+
+<!-- end list -->
 
 ``` r
 youth8 %>%
@@ -146,7 +260,7 @@ youth8 %>%
   geom_bar(stat = "identity")
 ```
 
-![](class7_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](class7_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ``` r
 youth8 %>%
@@ -160,7 +274,7 @@ youth8 %>%
   coord_flip()
 ```
 
-![](class7_files/figure-markdown_github/unnamed-chunk-4-2.png)
+![](class7_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->
 
 ``` r
 youth8 %>%
@@ -173,9 +287,11 @@ youth8 %>%
   coord_flip()
 ```
 
-![](class7_files/figure-markdown_github/unnamed-chunk-4-3.png)
+![](class7_files/figure-gfm/unnamed-chunk-8-3.png)<!-- -->
 
-Faceted chart.
+8.  Faceted chart.
+
+<!-- end list -->
 
 ``` r
 youth8 %>%
@@ -187,4 +303,4 @@ youth8 %>%
   facet_wrap(~ sex)
 ```
 
-![](class7_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](class7_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
