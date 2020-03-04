@@ -57,6 +57,19 @@ Bivariate distributions.
     ```
     
     ![](class7_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+    
+    ``` r
+    byRegion %>%
+    ggplot(
+      aes(x = reorder(region, -medianIncome), y = medianIncome)
+      ) +
+      geom_bar(stat = "identity") +
+      xlab("") +
+      ylab("Median net monthly personal income") +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1))
+    ```
+    
+    ![](class7_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
 
 2.  Make a dot plot showing the same information as above (without
     splitting by sex). Sort regions in the descending order by mean
@@ -82,7 +95,25 @@ Bivariate distributions.
       summarise(
     medianIncome = median(h_fimnnet_dv, na.rm = TRUE)
       )
+    byAge
+    ```
     
+        ## # A tibble: 87 x 2
+        ##    h_age_dv medianIncome
+        ##       <dbl>        <dbl>
+        ##  1       16          0  
+        ##  2       17         16.0
+        ##  3       18        229. 
+        ##  4       19        436. 
+        ##  5       20        534. 
+        ##  6       21        667. 
+        ##  7       22        922. 
+        ##  8       23       1092. 
+        ##  9       24       1165. 
+        ## 10       25       1253. 
+        ## # … with 77 more rows
+    
+    ``` r
     byAge %>%
         ggplot(aes(x = h_age_dv, y = medianIncome)) +
         geom_line() +
@@ -93,30 +124,6 @@ Bivariate distributions.
     ```
     
     ![](class7_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
-    
-    ``` r
-    # Split by sex
-    
-    byAgeSex <- Data8 %>%
-      mutate(h_sex_dv = ifelse(h_sex_dv == 1, "male",
-                           ifelse(h_sex_dv == 2, "female", NA))) %>%
-      filter(!is.na(h_sex_dv)) %>%
-      group_by(h_age_dv, h_sex_dv) %>%
-      summarise(
-    medianIncome = median(h_fimnnet_dv, na.rm = TRUE)
-      )
-    
-    byAgeSex %>%
-        ggplot(aes(x = h_age_dv, y = medianIncome, colour = h_sex_dv)) +
-        geom_line() +
-        geom_smooth() +
-        xlim(21,80) +
-        ylim(0,2500) +
-        xlab("Age") +
-        ylab("Median income")
-    ```
-    
-    ![](class7_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
 
 4.  Open the data from the youth questionnaire from wave 8. We will be
     working with the variable on BMI (h\_ypbmi\_dv) and visualise the
@@ -125,7 +132,6 @@ Bivariate distributions.
 <!-- end list -->
 
 ``` r
-library(tidyverse)
 youth8 <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w8/h_youth.tab")
 
 # summary(youth8$h_ypbmi_dv)

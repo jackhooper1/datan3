@@ -66,6 +66,17 @@ ggplot(
   ylab("Median net monthly personal income") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+
+byRegion %>%
+ggplot(
+  aes(x = reorder(region, -medianIncome), y = medianIncome)
+  ) +
+  geom_bar(stat = "identity") +
+  xlab("") +
+  ylab("Median net monthly personal income") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
     ```
 
 
@@ -89,6 +100,7 @@ byAge <- Data8 %>%
   summarise(
     medianIncome = median(h_fimnnet_dv, na.rm = TRUE)
   )
+byAge
 
 byAge %>%
         ggplot(aes(x = h_age_dv, y = medianIncome)) +
@@ -98,32 +110,14 @@ byAge %>%
         xlab("Age") +
         ylab("Median income")
 
-# Split by sex
 
-byAgeSex <- Data8 %>%
-  mutate(h_sex_dv = ifelse(h_sex_dv == 1, "male",
-                           ifelse(h_sex_dv == 2, "female", NA))) %>%
-  filter(!is.na(h_sex_dv)) %>%
-  group_by(h_age_dv, h_sex_dv) %>%
-  summarise(
-    medianIncome = median(h_fimnnet_dv, na.rm = TRUE)
-  )
 
-byAgeSex %>%
-        ggplot(aes(x = h_age_dv, y = medianIncome, colour = h_sex_dv)) +
-        geom_line() +
-        geom_smooth() +
-        xlim(21,80) +
-        ylim(0,2500) +
-        xlab("Age") +
-        ylab("Median income")
     ```
 
 
 4. Open the data from the youth questionnaire from wave 8. We will be working with the variable on BMI (h_ypbmi_dv) and visualise the distribution of BMI by sex, age, and ethnic group.
 
 ```{r}
-library(tidyverse)
 youth8 <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w8/h_youth.tab")
 
 # summary(youth8$h_ypbmi_dv)
