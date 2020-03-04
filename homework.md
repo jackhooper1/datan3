@@ -40,3 +40,10 @@ In this file I will list home assignments you need to to **before** coming to cl
 
 - Ch. 19 (Functions) from R for Data Science: https://r4ds.had.co.nz/functions.html
 
+#### 11 March
+
+- Ch. 21 (Iteration) from R for Data Science: https://r4ds.had.co.nz/iteration.html
+
+
+
+
