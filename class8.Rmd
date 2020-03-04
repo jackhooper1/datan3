@@ -1,7 +1,7 @@
 ---
 title: 'Data Analysis 3: Week 8'
 author: "Alexey Bessudnov"
-date: "7 March 2019"
+date: "4 March 2020"
 output: github_document
 ---
 
@@ -14,180 +14,200 @@ knitr::opts_chunk$set(cache = TRUE)
 ```
 Plan for today:
 
-1. Assignment 3: solution.
-2. Assignment 4.
-3. Final statistical report.
-4. Exercises: factors and other data types.
-5. Homework for next week: control structures (if ... else) and iteration.
+Functions.
 
+1) Simple functions.
+2) The use of arguments.
+3) Conditional execution.
+4) Global and local environments.
+5) Recursion.
+6) Functions with pipes and dplyr.
+7) Functions in applied social data analysis.
+8) Homework for next week: iteration.
 
-- Types of variables in social science research.
-
-- R data structures.
-
-- Vectors.
-
-Numeric (integer and double). Vectorisation.
+Exercise 1. Write a function to calculate the mean of a numeric vector.
 
 ```{r}
-x <- 1:6
-typeof(x)
-length(x)
-y <- c(1.2, 1.5, 2.76)
-typeof(y)
-length(y)
+myMean <- function(x) {
+  sum(x) / length(x)
+}
 
-x*2
-
-x + y
+myMean(1:10)
+mean(1:10)
 
 ```
 
-Exercise 1. Create a vector of length 100, randomly drawing it from the standard normal distribution. Find the mean and standard deviation. Multiply the vector by 2. Are the mean and standard deviation going to change?
+Execise 2. Write a conditional statement that checks if a vector is numeric, prints its first element if it is and prints its last element if it isn't.
 
 ```{r}
-x <- rnorm(100)
-head(x)
-mean(x)
-mean(x*2)
-sd(x)
-sd(x*2)
+x <- c(1:5, "a")
+if (is.numeric(x)){
+  x[1]
+} else {
+  x[length(x)]
+}
 
 ```
 
-Exercise 2. Read the individual wave 8 UndSoc data and extract the variable for age from the data frame. What type is it?
+Exercise 3. Modify myMean to include an extra argument to deal with missing values.
+
+```{r}
+myMean2 <- function(x, rm.missing = FALSE) {
+        if (rm.missing == TRUE) {
+                x <- na.omit(x)
+        }
+        sum(x) / length(x)
+}
+
+myMean(1:10)
+myMean2(c(1:10, NA))
+myMean2(c(1:10, NA), rm.missing = TRUE)
+```
+
+Exercise 4. Modify this function to return an error when the vector is not numeric.
+
+```{r}
+myMean3 <- function(x, rm.missing = FALSE) {
+        if (!is.numeric(x)) {
+                stop("The vector is not numeric.")
+        }
+        if (rm.missing == TRUE) {
+                x <- na.omit(x)
+        }
+        sum(x) / length(x)
+}
+# myMean3(c(1:10, "a"))
+
+```
+
+Exercise 5. Modify this function so that it saves the mean in the environment with the name "meanx". (Hint: think about environments.)
+
+```{r}
+myMean(1:10)
+# meanx <- myMean(1:10)
+myMean4 <- function(x) {
+        meanx <<- sum(x) / length(x)
+        meanx
+}
+myMean4(1:10)
+```
+
+Exercise 6. Write a function to calculate the factorial (i.e. 5! = 1x2x3x4x5). Note that 0! = 1, and for the negative numbers the factorial is not defined. (Hint: use recursion.)
+
+```{r}
+myFactorial <- function(x){
+  if (x == 0) {return(1)}
+  x * myFactorial(x-1)
+}
+
+myFactorial(4)
+
+```
+
+Functions with dplyr: see https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
 
 ```{r}
 library(tidyverse)
-df <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w8/h_indresp.tab")
-df %>% pull(h_age_dv) %>% typeof()
-df %>% pull(h_age_dv) %>% table()
-age <- df %>% pull(h_age_dv)
-typeof(age)
-age <- as.integer(age)
-typeof(age)
+
+# Create two tibbles with a similar structure
+
+data1 <- tibble(x1 = c(rep("a", 3), rep("b", 3), rep("c", 3)),
+               x2 = c(rep(letters[1:3], 3)),
+               y = rpois(9, 5)) %>%
+          mutate(y2 = y^2)
+
+data2 <- tibble(x1 = c(rep("a", 3), rep("b", 3), rep("c", 3)),
+               x2 = c(rep(letters[1:3], 3)),
+               y = rpois(9, 5)) %>%
+            mutate(y2 = y^2)
+
+
+# Find mean y grouping by x1
+
+data1 %>%
+  group_by(x1) %>%
+  summarise(
+    mean_y = mean(y)
+  )
+
+# Can we make a function for this?
+
+mean_y <- function(df){
+  df %>%
+  group_by(x1) %>%
+  summarise(
+    mean_y = mean(y)
+  )
+}
+
+mean_y(data1)
+mean_y(data2)
+
+# Can we add the grouping variable interactively?
+
+mean_y2 <- function(df, groupVar){
+  df %>%
+  group_by(groupVar) %>%
+  summarise(
+    mean_y = mean(y)
+  )
+}
+
+# mean_y(data1, x1)
+# This is not working.
+
+mean_y3 <- function(df, groupVar){
+  groupVar <- enquo(groupVar)
+  df %>%
+  group_by(!! groupVar) %>%
+  summarise(
+    mean_y = mean(y)
+  )
+}
+
+mean_y3(data1, x1)
+
+# You may also want to change expressions in a function.
+
+data1 %>%
+  group_by(x1) %>%
+  summarise(
+    mean_y = mean(y)
+  )
+
+data1 %>%
+  group_by(x1) %>%
+  summarise(
+    mean_y = mean(y + y2)
+  )
+
+mean_y4 <- function(df, groupVar, expr){
+  groupVar <- enquo(groupVar)
+  df %>%
+  group_by(!! groupVar) %>%
+  summarise(
+    mean_y = mean(expr)
+  )
+}
+
+# mean_y4(data1, x1, y)
+# not working
+
+mean_y5 <- function(df, groupVar, expr){
+  groupVar <- enquo(groupVar)
+  expr <- enquo(expr)
+  df %>%
+  group_by(!! groupVar) %>%
+  summarise(
+    mean_y = mean(!! expr)
+  )
+}
+
+mean_y5(data1, x1, y)
+mean_y5(data1, x1, y + y2)
+
 
 ```
-
-Logical vectors.
-
-Exercise 3. Convert sex into a logical vector for being male. Calculate the proportion of men in the data set.
-
-```{r}
-sex <- df %>% pull(h_sex_dv)
-male <- ifelse(sex == 1, TRUE, FALSE)
-head(male)
-typeof(male)
-TRUE == 1
-FALSE == 0
-
-mean(male)
-
-```
-
-Character vectors.
-
-Exercise 4. Convert sex into a character vector with the values "male" and "female".
-
-```{r}
-sex_chr <- ifelse(sex == 1, "male",
-                  ifelse(sex == 2, "female", NA))
-typeof(sex_chr)
-
-x <- 1:6
-x
-x <- as.character(x)
-x
-mean(x)
-x <- as.numeric(x)
-x
-y <- c("1", "a", "2")
-as.numeric(y)
-
-```
-
-Factors (augmented numeric).
-
-Exercise 5. Convert sex into a factor. Change the order of levels.
-
-```{r}
-library(tidyverse)
-library(forcats)
-
-sex_fct <- factor(sex_chr)
-typeof(sex_fct)
-class(sex_fct)
-str(sex_fct)
-levels(sex_fct)
-
-sex_fct2 <- factor(sex_chr, levels = c("male", "female"))
-levels(sex_fct2)
-
-sex_fct3 <- fct_relevel(sex_chr, "male")
-levels(sex_fct3)
-
-sex_fct3 %>%
-  as_tibble() %>%
-  filter(!is.na(sex_fct3)) %>%
-  ggplot(aes(x = value)) +
-  geom_bar()
-
-sex_fct %>%
-  as_tibble() %>%
-  filter(!is.na(sex_fct3)) %>%
-  ggplot(aes(x = value)) +
-  geom_bar()
-```
-
-Matrices and data frames.
-
-```{r}
-x <- matrix(1:10, nrow = 2)
-x
-
-y <- data.frame(x = c(TRUE, FALSE, TRUE), y = 1:3, z = letters[1:3])
-y
-``` 
-
-Lists.
-
-Exercise 6. Make a list of four elements containing: 1) the vector from exercise 1, 2) the vector from exercise 3, 3) TRUE, 4) a list with your name and your surname.
-
-```{r}
-l1 <- list(x, sex_chr, TRUE, list("Alexey", "Bessudnov"))
-str(l1)
-
-a <- l1[2]
-typeof(a)
-b <- l1[[2]]
-typeof(b)
-
-l1[[4]][[2]]
-```
-
-
-Exercise 7. Regress earnings on age and age squared. Extract regression coefficients as a vector.
-
-```{r}
-m1 <- lm(h_fimnnet_dv ~ h_age_dv + I(h_age_dv^2), df)
-m1
-summary(m1)
-typeof(m1)
-str(m1)
-
-m1$coefficients
-m1[[1]]
-typeof(m1$coefficients)
-
-```
-
-Missing values.
-
-Other data types: dates and times.
-
-
-
-
 
 
 

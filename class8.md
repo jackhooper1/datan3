@@ -1,469 +1,305 @@
 Data Analysis 3: Week 8
 ================
 Alexey Bessudnov
-7 March 2019
+4 March 2020
 
 Plan for today:
 
-1.  Assignment 3: solution.
-2.  Assignment 4.
-3.  Final statistical report.
-4.  Exercises: factors and other data types.
-5.  Homework for next week: control structures (if ... else) and iteration.
+Functions.
 
--   Types of variables in social science research.
+1)  Simple functions.
+2)  The use of arguments.
+3)  Conditional execution.
+4)  Global and local environments.
+5)  Recursion.
+6)  Functions with pipes and dplyr.
+7)  Functions in applied social data analysis.
+8)  Homework for next week: iteration.
 
--   R data structures.
-
--   Vectors.
-
-Numeric (integer and double). Vectorisation.
+Exercise 1. Write a function to calculate the mean of a numeric vector.
 
 ``` r
-x <- 1:6
-typeof(x)
+myMean <- function(x) {
+  sum(x) / length(x)
+}
+
+myMean(1:10)
 ```
 
-    ## [1] "integer"
+    ## [1] 5.5
 
 ``` r
-length(x)
+mean(1:10)
 ```
 
-    ## [1] 6
+    ## [1] 5.5
+
+Execise 2. Write a conditional statement that checks if a vector is
+numeric, prints its first element if it is and prints its last element
+if it isn’t.
 
 ``` r
-y <- c(1.2, 1.5, 2.76)
-typeof(y)
+x <- c(1:5, "a")
+if (is.numeric(x)){
+  x[1]
+} else {
+  x[length(x)]
+}
 ```
 
-    ## [1] "double"
+    ## [1] "a"
+
+Exercise 3. Modify myMean to include an extra argument to deal with
+missing values.
 
 ``` r
-length(y)
+myMean2 <- function(x, rm.missing = FALSE) {
+        if (rm.missing == TRUE) {
+                x <- na.omit(x)
+        }
+        sum(x) / length(x)
+}
+
+myMean(1:10)
 ```
 
-    ## [1] 3
+    ## [1] 5.5
 
 ``` r
-x*2
-```
-
-    ## [1]  2  4  6  8 10 12
-
-``` r
-x + y
-```
-
-    ## [1] 2.20 3.50 5.76 5.20 6.50 8.76
-
-Exercise 1. Create a vector of length 100, randomly drawing it from the standard normal distribution. Find the mean and standard deviation. Multiply the vector by 2. Are the mean and standard deviation going to change?
-
-``` r
-x <- rnorm(100)
-head(x)
-```
-
-    ## [1] -0.7393141  0.2477398 -1.0358360 -0.2133745  0.1016079 -1.6731608
-
-``` r
-mean(x)
-```
-
-    ## [1] -0.06945599
-
-``` r
-mean(x*2)
-```
-
-    ## [1] -0.138912
-
-``` r
-sd(x)
-```
-
-    ## [1] 0.8964047
-
-``` r
-sd(x*2)
-```
-
-    ## [1] 1.792809
-
-Exercise 2. Read the individual wave 8 UndSoc data and extract the variable for age from the data frame. What type is it?
-
-``` r
-library(tidyverse)
-df <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w8/h_indresp.tab")
-df %>% pull(h_age_dv) %>% typeof()
-```
-
-    ## [1] "double"
-
-``` r
-df %>% pull(h_age_dv) %>% table()
-```
-
-    ## .
-    ##  16  17  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33 
-    ## 554 625 583 567 537 541 555 562 547 495 462 474 461 484 500 500 550 543 
-    ##  34  35  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51 
-    ## 556 592 685 655 622 645 605 618 673 676 675 701 771 751 754 758 728 745 
-    ##  52  53  54  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69 
-    ## 706 675 708 703 686 675 647 656 591 616 569 634 538 605 516 571 604 642 
-    ##  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87 
-    ## 622 517 487 434 426 403 361 350 316 314 275 255 213 195 177 176 136 121 
-    ##  88  89  90  91  92  93  94  95  96  97  98  99 100 101 102 
-    ## 117  72  63  43  27  30  21  16  10   5   5   2   3   3   2
-
-``` r
-age <- df %>% pull(h_age_dv)
-typeof(age)
-```
-
-    ## [1] "double"
-
-``` r
-age <- as.integer(age)
-typeof(age)
-```
-
-    ## [1] "integer"
-
-Logical vectors.
-
-Exercise 3. Convert sex into a logical vector for being male. Calculate the proportion of men in the data set.
-
-``` r
-sex <- df %>% pull(h_sex_dv)
-male <- ifelse(sex == 1, TRUE, FALSE)
-head(male)
-```
-
-    ## [1] FALSE FALSE FALSE  TRUE FALSE FALSE
-
-``` r
-typeof(male)
-```
-
-    ## [1] "logical"
-
-``` r
-TRUE == 1
-```
-
-    ## [1] TRUE
-
-``` r
-FALSE == 0
-```
-
-    ## [1] TRUE
-
-``` r
-mean(male)
-```
-
-    ## [1] 0.4560055
-
-Character vectors.
-
-Exercise 4. Convert sex into a character vector with the values "male" and "female".
-
-``` r
-sex_chr <- ifelse(sex == 1, "male",
-                  ifelse(sex == 2, "female", NA))
-typeof(sex_chr)
-```
-
-    ## [1] "character"
-
-``` r
-x <- 1:6
-x
-```
-
-    ## [1] 1 2 3 4 5 6
-
-``` r
-x <- as.character(x)
-x
-```
-
-    ## [1] "1" "2" "3" "4" "5" "6"
-
-``` r
-mean(x)
+myMean2(c(1:10, NA))
 ```
 
     ## [1] NA
 
 ``` r
-x <- as.numeric(x)
-x
+myMean2(c(1:10, NA), rm.missing = TRUE)
 ```
 
-    ## [1] 1 2 3 4 5 6
+    ## [1] 5.5
+
+Exercise 4. Modify this function to return an error when the vector is
+not numeric.
 
 ``` r
-y <- c("1", "a", "2")
-as.numeric(y)
+myMean3 <- function(x, rm.missing = FALSE) {
+        if (!is.numeric(x)) {
+                stop("The vector is not numeric.")
+        }
+        if (rm.missing == TRUE) {
+                x <- na.omit(x)
+        }
+        sum(x) / length(x)
+}
+# myMean3(c(1:10, "a"))
 ```
 
-    ## [1]  1 NA  2
+Exercise 5. Modify this function so that it saves the mean in the
+environment with the name “meanx”. (Hint: think about environments.)
 
-Factors (augmented numeric).
+``` r
+myMean(1:10)
+```
 
-Exercise 5. Convert sex into a factor. Change the order of levels.
+    ## [1] 5.5
+
+``` r
+# meanx <- myMean(1:10)
+myMean4 <- function(x) {
+        meanx <<- sum(x) / length(x)
+        meanx
+}
+myMean4(1:10)
+```
+
+    ## [1] 5.5
+
+Exercise 6. Write a function to calculate the factorial (i.e. 5\! =
+1x2x3x4x5). Note that 0\! = 1, and for the negative numbers the
+factorial is not defined. (Hint: use recursion.)
+
+``` r
+myFactorial <- function(x){
+  if (x == 0) {return(1)}
+  x * myFactorial(x-1)
+}
+
+myFactorial(4)
+```
+
+    ## [1] 24
+
+Functions with dplyr: see
+<https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html>
 
 ``` r
 library(tidyverse)
-library(forcats)
 
-sex_fct <- factor(sex_chr)
-typeof(sex_fct)
+# Create two tibbles with a similar structure
+
+data1 <- tibble(x1 = c(rep("a", 3), rep("b", 3), rep("c", 3)),
+               x2 = c(rep(letters[1:3], 3)),
+               y = rpois(9, 5)) %>%
+          mutate(y2 = y^2)
+
+data2 <- tibble(x1 = c(rep("a", 3), rep("b", 3), rep("c", 3)),
+               x2 = c(rep(letters[1:3], 3)),
+               y = rpois(9, 5)) %>%
+            mutate(y2 = y^2)
+
+
+# Find mean y grouping by x1
+
+data1 %>%
+  group_by(x1) %>%
+  summarise(
+    mean_y = mean(y)
+  )
 ```
 
-    ## [1] "integer"
+    ## # A tibble: 3 x 2
+    ##   x1    mean_y
+    ##   <chr>  <dbl>
+    ## 1 a       4.33
+    ## 2 b       2.67
+    ## 3 c       4.67
 
 ``` r
-class(sex_fct)
+# Can we make a function for this?
+
+mean_y <- function(df){
+  df %>%
+  group_by(x1) %>%
+  summarise(
+    mean_y = mean(y)
+  )
+}
+
+mean_y(data1)
 ```
 
-    ## [1] "factor"
+    ## # A tibble: 3 x 2
+    ##   x1    mean_y
+    ##   <chr>  <dbl>
+    ## 1 a       4.33
+    ## 2 b       2.67
+    ## 3 c       4.67
 
 ``` r
-str(sex_fct)
+mean_y(data2)
 ```
 
-    ##  Factor w/ 2 levels "female","male": 1 1 1 2 1 1 2 2 1 2 ...
+    ## # A tibble: 3 x 2
+    ##   x1    mean_y
+    ##   <chr>  <dbl>
+    ## 1 a       2   
+    ## 2 b       5.67
+    ## 3 c       5
 
 ``` r
-levels(sex_fct)
+# Can we add the grouping variable interactively?
+
+mean_y2 <- function(df, groupVar){
+  df %>%
+  group_by(groupVar) %>%
+  summarise(
+    mean_y = mean(y)
+  )
+}
+
+# mean_y(data1, x1)
+# This is not working.
+
+mean_y3 <- function(df, groupVar){
+  groupVar <- enquo(groupVar)
+  df %>%
+  group_by(!! groupVar) %>%
+  summarise(
+    mean_y = mean(y)
+  )
+}
+
+mean_y3(data1, x1)
 ```
 
-    ## [1] "female" "male"
+    ## # A tibble: 3 x 2
+    ##   x1    mean_y
+    ##   <chr>  <dbl>
+    ## 1 a       4.33
+    ## 2 b       2.67
+    ## 3 c       4.67
 
 ``` r
-sex_fct2 <- factor(sex_chr, levels = c("male", "female"))
-levels(sex_fct2)
+# You may also want to change expressions in a function.
+
+data1 %>%
+  group_by(x1) %>%
+  summarise(
+    mean_y = mean(y)
+  )
 ```
 
-    ## [1] "male"   "female"
+    ## # A tibble: 3 x 2
+    ##   x1    mean_y
+    ##   <chr>  <dbl>
+    ## 1 a       4.33
+    ## 2 b       2.67
+    ## 3 c       4.67
 
 ``` r
-sex_fct3 <- fct_relevel(sex_chr, "male")
-levels(sex_fct3)
+data1 %>%
+  group_by(x1) %>%
+  summarise(
+    mean_y = mean(y + y2)
+  )
 ```
 
-    ## [1] "male"   "female"
+    ## # A tibble: 3 x 2
+    ##   x1    mean_y
+    ##   <chr>  <dbl>
+    ## 1 a       26  
+    ## 2 b       11.3
+    ## 3 c       28
 
 ``` r
-sex_fct3 %>%
-  as_tibble() %>%
-  filter(!is.na(sex_fct3)) %>%
-  ggplot(aes(x = value)) +
-  geom_bar()
+mean_y4 <- function(df, groupVar, expr){
+  groupVar <- enquo(groupVar)
+  df %>%
+  group_by(!! groupVar) %>%
+  summarise(
+    mean_y = mean(expr)
+  )
+}
+
+# mean_y4(data1, x1, y)
+# not working
+
+mean_y5 <- function(df, groupVar, expr){
+  groupVar <- enquo(groupVar)
+  expr <- enquo(expr)
+  df %>%
+  group_by(!! groupVar) %>%
+  summarise(
+    mean_y = mean(!! expr)
+  )
+}
+
+mean_y5(data1, x1, y)
 ```
 
-![](class8_files/figure-markdown_github/unnamed-chunk-6-1.png)
+    ## # A tibble: 3 x 2
+    ##   x1    mean_y
+    ##   <chr>  <dbl>
+    ## 1 a       4.33
+    ## 2 b       2.67
+    ## 3 c       4.67
 
 ``` r
-sex_fct %>%
-  as_tibble() %>%
-  filter(!is.na(sex_fct3)) %>%
-  ggplot(aes(x = value)) +
-  geom_bar()
+mean_y5(data1, x1, y + y2)
 ```
 
-![](class8_files/figure-markdown_github/unnamed-chunk-6-2.png)
-
-Matrices and data frames.
-
-``` r
-x <- matrix(1:10, nrow = 2)
-x
-```
-
-    ##      [,1] [,2] [,3] [,4] [,5]
-    ## [1,]    1    3    5    7    9
-    ## [2,]    2    4    6    8   10
-
-``` r
-y <- data.frame(x = c(TRUE, FALSE, TRUE), y = 1:3, z = letters[1:3])
-y
-```
-
-    ##       x y z
-    ## 1  TRUE 1 a
-    ## 2 FALSE 2 b
-    ## 3  TRUE 3 c
-
-Lists.
-
-Exercise 6. Make a list of four elements containing: 1) the vector from exercise 1, 2) the vector from exercise 3, 3) TRUE, 4) a list with your name and your surname.
-
-``` r
-l1 <- list(x, sex_chr, TRUE, list("Alexey", "Bessudnov"))
-str(l1)
-```
-
-    ## List of 4
-    ##  $ : int [1:2, 1:5] 1 2 3 4 5 6 7 8 9 10
-    ##  $ : chr [1:39289] "female" "female" "female" "male" ...
-    ##  $ : logi TRUE
-    ##  $ :List of 2
-    ##   ..$ : chr "Alexey"
-    ##   ..$ : chr "Bessudnov"
-
-``` r
-a <- l1[2]
-typeof(a)
-```
-
-    ## [1] "list"
-
-``` r
-b <- l1[[2]]
-typeof(b)
-```
-
-    ## [1] "character"
-
-``` r
-l1[[4]][[2]]
-```
-
-    ## [1] "Bessudnov"
-
-Exercise 7. Regress earnings on age and age squared. Extract regression coefficients as a vector.
-
-``` r
-m1 <- lm(h_fimnnet_dv ~ h_age_dv + I(h_age_dv^2), df)
-m1
-```
-
-    ## 
-    ## Call:
-    ## lm(formula = h_fimnnet_dv ~ h_age_dv + I(h_age_dv^2), data = df)
-    ## 
-    ## Coefficients:
-    ##   (Intercept)       h_age_dv  I(h_age_dv^2)  
-    ##     -773.2152        97.7122        -0.8986
-
-``` r
-summary(m1)
-```
-
-    ## 
-    ## Call:
-    ## lm(formula = h_fimnnet_dv ~ h_age_dv + I(h_age_dv^2), data = df)
-    ## 
-    ## Residuals:
-    ##    Min     1Q Median     3Q    Max 
-    ## -54377   -726   -230    406  87657 
-    ## 
-    ## Coefficients:
-    ##                 Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)   -773.21520   55.92257  -13.83   <2e-16 ***
-    ## h_age_dv        97.71215    2.40930   40.56   <2e-16 ***
-    ## I(h_age_dv^2)   -0.89855    0.02383  -37.71   <2e-16 ***
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 1752 on 39286 degrees of freedom
-    ## Multiple R-squared:  0.04277,    Adjusted R-squared:  0.04272 
-    ## F-statistic: 877.6 on 2 and 39286 DF,  p-value: < 2.2e-16
-
-``` r
-typeof(m1)
-```
-
-    ## [1] "list"
-
-``` r
-str(m1)
-```
-
-    ## List of 12
-    ##  $ coefficients : Named num [1:3] -773.215 97.712 -0.899
-    ##   ..- attr(*, "names")= chr [1:3] "(Intercept)" "h_age_dv" "I(h_age_dv^2)"
-    ##  $ residuals    : Named num [1:39289] 697.3 1140.8 735.6 -33.7 740.7 ...
-    ##   ..- attr(*, "names")= chr [1:39289] "1" "2" "3" "4" ...
-    ##  $ effects      : Named num [1:39289] -305197 31955.4 -66058.1 -42.3 731.7 ...
-    ##   ..- attr(*, "names")= chr [1:39289] "(Intercept)" "h_age_dv" "I(h_age_dv^2)" "" ...
-    ##  $ rank         : int 3
-    ##  $ fitted.values: Named num [1:39289] 1392 1671 1473 1723 1612 ...
-    ##   ..- attr(*, "names")= chr [1:39289] "1" "2" "3" "4" ...
-    ##  $ assign       : int [1:3] 0 1 2
-    ##  $ qr           :List of 5
-    ##   ..$ qr   : num [1:39289, 1:3] -1.98e+02 5.05e-03 5.05e-03 5.05e-03 5.05e-03 ...
-    ##   .. ..- attr(*, "dimnames")=List of 2
-    ##   .. .. ..$ : chr [1:39289] "1" "2" "3" "4" ...
-    ##   .. .. ..$ : chr [1:3] "(Intercept)" "h_age_dv" "I(h_age_dv^2)"
-    ##   .. ..- attr(*, "assign")= int [1:3] 0 1 2
-    ##   ..$ qraux: num [1:3] 1.01 1 1
-    ##   ..$ pivot: int [1:3] 1 2 3
-    ##   ..$ tol  : num 1e-07
-    ##   ..$ rank : int 3
-    ##   ..- attr(*, "class")= chr "qr"
-    ##  $ df.residual  : int 39286
-    ##  $ xlevels      : Named list()
-    ##  $ call         : language lm(formula = h_fimnnet_dv ~ h_age_dv + I(h_age_dv^2), data = df)
-    ##  $ terms        :Classes 'terms', 'formula'  language h_fimnnet_dv ~ h_age_dv + I(h_age_dv^2)
-    ##   .. ..- attr(*, "variables")= language list(h_fimnnet_dv, h_age_dv, I(h_age_dv^2))
-    ##   .. ..- attr(*, "factors")= int [1:3, 1:2] 0 1 0 0 0 1
-    ##   .. .. ..- attr(*, "dimnames")=List of 2
-    ##   .. .. .. ..$ : chr [1:3] "h_fimnnet_dv" "h_age_dv" "I(h_age_dv^2)"
-    ##   .. .. .. ..$ : chr [1:2] "h_age_dv" "I(h_age_dv^2)"
-    ##   .. ..- attr(*, "term.labels")= chr [1:2] "h_age_dv" "I(h_age_dv^2)"
-    ##   .. ..- attr(*, "order")= int [1:2] 1 1
-    ##   .. ..- attr(*, "intercept")= int 1
-    ##   .. ..- attr(*, "response")= int 1
-    ##   .. ..- attr(*, ".Environment")=<environment: R_GlobalEnv> 
-    ##   .. ..- attr(*, "predvars")= language list(h_fimnnet_dv, h_age_dv, I(h_age_dv^2))
-    ##   .. ..- attr(*, "dataClasses")= Named chr [1:3] "numeric" "numeric" "numeric"
-    ##   .. .. ..- attr(*, "names")= chr [1:3] "h_fimnnet_dv" "h_age_dv" "I(h_age_dv^2)"
-    ##  $ model        :'data.frame':   39289 obs. of  3 variables:
-    ##   ..$ h_fimnnet_dv : num [1:39289] 2090 2812 2208 1689 2353 ...
-    ##   ..$ h_age_dv     : num [1:39289] 31 39 33 41 37 26 34 46 50 43 ...
-    ##   ..$ I(h_age_dv^2): 'AsIs' num [1:39289]  961 1521 1089 1681 1369 ...
-    ##   ..- attr(*, "terms")=Classes 'terms', 'formula'  language h_fimnnet_dv ~ h_age_dv + I(h_age_dv^2)
-    ##   .. .. ..- attr(*, "variables")= language list(h_fimnnet_dv, h_age_dv, I(h_age_dv^2))
-    ##   .. .. ..- attr(*, "factors")= int [1:3, 1:2] 0 1 0 0 0 1
-    ##   .. .. .. ..- attr(*, "dimnames")=List of 2
-    ##   .. .. .. .. ..$ : chr [1:3] "h_fimnnet_dv" "h_age_dv" "I(h_age_dv^2)"
-    ##   .. .. .. .. ..$ : chr [1:2] "h_age_dv" "I(h_age_dv^2)"
-    ##   .. .. ..- attr(*, "term.labels")= chr [1:2] "h_age_dv" "I(h_age_dv^2)"
-    ##   .. .. ..- attr(*, "order")= int [1:2] 1 1
-    ##   .. .. ..- attr(*, "intercept")= int 1
-    ##   .. .. ..- attr(*, "response")= int 1
-    ##   .. .. ..- attr(*, ".Environment")=<environment: R_GlobalEnv> 
-    ##   .. .. ..- attr(*, "predvars")= language list(h_fimnnet_dv, h_age_dv, I(h_age_dv^2))
-    ##   .. .. ..- attr(*, "dataClasses")= Named chr [1:3] "numeric" "numeric" "numeric"
-    ##   .. .. .. ..- attr(*, "names")= chr [1:3] "h_fimnnet_dv" "h_age_dv" "I(h_age_dv^2)"
-    ##  - attr(*, "class")= chr "lm"
-
-``` r
-m1$coefficients
-```
-
-    ##   (Intercept)      h_age_dv I(h_age_dv^2) 
-    ##  -773.2151962    97.7121504    -0.8985508
-
-``` r
-m1[[1]]
-```
-
-    ##   (Intercept)      h_age_dv I(h_age_dv^2) 
-    ##  -773.2151962    97.7121504    -0.8985508
-
-``` r
-typeof(m1$coefficients)
-```
-
-    ## [1] "double"
-
-Missing values.
-
-Other data types: dates and times.
+    ## # A tibble: 3 x 2
+    ##   x1    mean_y
+    ##   <chr>  <dbl>
+    ## 1 a       26  
+    ## 2 b       11.3
+    ## 3 c       28
