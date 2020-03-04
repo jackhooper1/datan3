@@ -19,9 +19,7 @@ Functions.
 Exercise 1. Write a function to calculate the mean of a numeric vector.
 
 ``` r
-myMean <- function(x) {
-  sum(x) / length(x)
-}
+myMean <- function(x) {sum(x) / length(x)}
 
 myMean(1:10)
 ```
@@ -39,7 +37,7 @@ numeric, prints its first element if it is and prints its last element
 if it isn’t.
 
 ``` r
-x <- c(1:5, "a")
+x <- 1:5
 if (is.numeric(x)){
   x[1]
 } else {
@@ -47,14 +45,14 @@ if (is.numeric(x)){
 }
 ```
 
-    ## [1] "a"
+    ## [1] 1
 
 Exercise 3. Modify myMean to include an extra argument to deal with
 missing values.
 
 ``` r
 myMean2 <- function(x, rm.missing = FALSE) {
-        if (rm.missing == TRUE) {
+        if (rm.missing) {
                 x <- na.omit(x)
         }
         sum(x) / length(x)
@@ -85,13 +83,50 @@ myMean3 <- function(x, rm.missing = FALSE) {
         if (!is.numeric(x)) {
                 stop("The vector is not numeric.")
         }
-        if (rm.missing == TRUE) {
+        if (rm.missing) {
                 x <- na.omit(x)
         }
         sum(x) / length(x)
 }
 # myMean3(c(1:10, "a"))
 ```
+
+Global and local environments.
+
+``` r
+ls()
+```
+
+    ## [1] "myMean"  "myMean2" "myMean3" "x"
+
+``` r
+y <- 1:5
+
+print_y <- function(){
+  print(y)
+} 
+
+print_y()
+```
+
+    ## [1] 1 2 3 4 5
+
+``` r
+print_y2 <- function(){
+  y <- 1:10
+  print(y)
+} 
+
+print_y2()
+```
+
+    ##  [1]  1  2  3  4  5  6  7  8  9 10
+
+``` r
+y
+```
+
+    ## [1] 1 2 3 4 5
 
 Exercise 5. Modify this function so that it saves the mean in the
 environment with the name “meanx”. (Hint: think about environments.)
@@ -108,6 +143,7 @@ myMean4 <- function(x) {
         meanx <<- sum(x) / length(x)
         meanx
 }
+
 myMean4(1:10)
 ```
 
@@ -133,6 +169,7 @@ Functions with dplyr: see
 
 ``` r
 library(tidyverse)
+rm(list = ls())
 
 # Create two tibbles with a similar structure
 
@@ -159,9 +196,9 @@ data1 %>%
     ## # A tibble: 3 x 2
     ##   x1    mean_y
     ##   <chr>  <dbl>
-    ## 1 a       4.33
+    ## 1 a       6.33
     ## 2 b       2.67
-    ## 3 c       4.67
+    ## 3 c       3.33
 
 ``` r
 # Can we make a function for this?
@@ -180,9 +217,9 @@ mean_y(data1)
     ## # A tibble: 3 x 2
     ##   x1    mean_y
     ##   <chr>  <dbl>
-    ## 1 a       4.33
+    ## 1 a       6.33
     ## 2 b       2.67
-    ## 3 c       4.67
+    ## 3 c       3.33
 
 ``` r
 mean_y(data2)
@@ -191,9 +228,9 @@ mean_y(data2)
     ## # A tibble: 3 x 2
     ##   x1    mean_y
     ##   <chr>  <dbl>
-    ## 1 a       2   
-    ## 2 b       5.67
-    ## 3 c       5
+    ## 1 a       6.33
+    ## 2 b       4   
+    ## 3 c       4.33
 
 ``` r
 # Can we add the grouping variable interactively?
@@ -224,9 +261,20 @@ mean_y3(data1, x1)
     ## # A tibble: 3 x 2
     ##   x1    mean_y
     ##   <chr>  <dbl>
-    ## 1 a       4.33
+    ## 1 a       6.33
     ## 2 b       2.67
-    ## 3 c       4.67
+    ## 3 c       3.33
+
+``` r
+mean_y3(data1, x2)
+```
+
+    ## # A tibble: 3 x 2
+    ##   x2    mean_y
+    ##   <chr>  <dbl>
+    ## 1 a       3   
+    ## 2 b       3.67
+    ## 3 c       5.67
 
 ``` r
 # You may also want to change expressions in a function.
@@ -241,9 +289,9 @@ data1 %>%
     ## # A tibble: 3 x 2
     ##   x1    mean_y
     ##   <chr>  <dbl>
-    ## 1 a       4.33
+    ## 1 a       6.33
     ## 2 b       2.67
-    ## 3 c       4.67
+    ## 3 c       3.33
 
 ``` r
 data1 %>%
@@ -256,9 +304,9 @@ data1 %>%
     ## # A tibble: 3 x 2
     ##   x1    mean_y
     ##   <chr>  <dbl>
-    ## 1 a       26  
-    ## 2 b       11.3
-    ## 3 c       28
+    ## 1 a       53.3
+    ## 2 b       10.7
+    ## 3 c       16
 
 ``` r
 mean_y4 <- function(df, groupVar, expr){
@@ -289,9 +337,9 @@ mean_y5(data1, x1, y)
     ## # A tibble: 3 x 2
     ##   x1    mean_y
     ##   <chr>  <dbl>
-    ## 1 a       4.33
+    ## 1 a       6.33
     ## 2 b       2.67
-    ## 3 c       4.67
+    ## 3 c       3.33
 
 ``` r
 mean_y5(data1, x1, y + y2)
@@ -300,6 +348,6 @@ mean_y5(data1, x1, y + y2)
     ## # A tibble: 3 x 2
     ##   x1    mean_y
     ##   <chr>  <dbl>
-    ## 1 a       26  
-    ## 2 b       11.3
-    ## 3 c       28
+    ## 1 a       53.3
+    ## 2 b       10.7
+    ## 3 c       16

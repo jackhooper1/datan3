@@ -28,9 +28,7 @@ Functions.
 Exercise 1. Write a function to calculate the mean of a numeric vector.
 
 ```{r}
-myMean <- function(x) {
-  sum(x) / length(x)
-}
+myMean <- function(x) {sum(x) / length(x)}
 
 myMean(1:10)
 mean(1:10)
@@ -40,7 +38,7 @@ mean(1:10)
 Execise 2. Write a conditional statement that checks if a vector is numeric, prints its first element if it is and prints its last element if it isn't.
 
 ```{r}
-x <- c(1:5, "a")
+x <- 1:5
 if (is.numeric(x)){
   x[1]
 } else {
@@ -53,7 +51,7 @@ Exercise 3. Modify myMean to include an extra argument to deal with missing valu
 
 ```{r}
 myMean2 <- function(x, rm.missing = FALSE) {
-        if (rm.missing == TRUE) {
+        if (rm.missing) {
                 x <- na.omit(x)
         }
         sum(x) / length(x)
@@ -71,7 +69,7 @@ myMean3 <- function(x, rm.missing = FALSE) {
         if (!is.numeric(x)) {
                 stop("The vector is not numeric.")
         }
-        if (rm.missing == TRUE) {
+        if (rm.missing) {
                 x <- na.omit(x)
         }
         sum(x) / length(x)
@@ -79,6 +77,30 @@ myMean3 <- function(x, rm.missing = FALSE) {
 # myMean3(c(1:10, "a"))
 
 ```
+
+Global and local environments.
+
+```{r}
+ls()
+y <- 1:5
+
+print_y <- function(){
+  print(y)
+} 
+
+print_y()
+
+print_y2 <- function(){
+  y <- 1:10
+  print(y)
+} 
+
+print_y2()
+
+y
+
+```
+
 
 Exercise 5. Modify this function so that it saves the mean in the environment with the name "meanx". (Hint: think about environments.)
 
@@ -89,6 +111,7 @@ myMean4 <- function(x) {
         meanx <<- sum(x) / length(x)
         meanx
 }
+
 myMean4(1:10)
 ```
 
@@ -108,6 +131,7 @@ Functions with dplyr: see https://cran.r-project.org/web/packages/dplyr/vignette
 
 ```{r}
 library(tidyverse)
+rm(list = ls())
 
 # Create two tibbles with a similar structure
 
@@ -166,6 +190,8 @@ mean_y3 <- function(df, groupVar){
 }
 
 mean_y3(data1, x1)
+mean_y3(data1, x2)
+
 
 # You may also want to change expressions in a function.
 
