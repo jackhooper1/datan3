@@ -48,6 +48,7 @@ https://github.com/datan3-2020/assignment4
 
 Deadline: 17 March, 2pm.
 
+https://github.com/datan3-2020/assignment5
 
 #### Final statistical report
 
