@@ -44,6 +44,16 @@ In this file I will list home assignments you need to to **before** coming to cl
 
 - Ch. 21 (Iteration) from R for Data Science: https://r4ds.had.co.nz/iteration.html
 
+#### 18 March
+
+- Ch. 15 (Factors) from R for Data Science: https://r4ds.had.co.nz/factors.html
+
+#### 25 March
+
+- Ch. 14 (Strings) from R for Data Science: https://r4ds.had.co.nz/strings.html
+
+
+
 
 
 
