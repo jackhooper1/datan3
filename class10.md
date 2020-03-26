@@ -26,6 +26,12 @@ typeof(x)
     ## [1] "integer"
 
 ``` r
+class(x)
+```
+
+    ## [1] "integer"
+
+``` r
 length(x)
 ```
 
@@ -45,7 +51,7 @@ length(y)
     ## [1] 3
 
 ``` r
-x*2
+x * 2
 ```
 
     ## [1]  2  4  6  8 10 12
@@ -63,34 +69,60 @@ change?
 
 ``` r
 x <- rnorm(100)
+
 head(x)
 ```
 
-    ## [1]  2.1183974  1.5288465 -0.3430941 -0.9345490  3.1625848  0.5699517
+    ## [1] -0.99776839  0.53564751 -0.87805778  0.03836701 -1.12717853 -1.53879440
 
 ``` r
 mean(x)
 ```
 
-    ## [1] 0.02404573
+    ## [1] -0.1467678
+
+``` r
+x * 2
+```
+
+    ##   [1] -1.995536785  1.071295020 -1.756115553  0.076734017 -2.254357051
+    ##   [6] -3.077588805  1.492778160  2.336181546  0.737788575 -2.521593455
+    ##  [11] -1.666526190 -0.305549454  0.251671414  0.181476819 -2.784252908
+    ##  [16] -3.717678838 -4.224808269 -4.601963993  1.215023868 -0.841231481
+    ##  [21] -0.070946363 -0.266023655  1.542398487  1.751944056  2.501508497
+    ##  [26]  2.462791504  0.092575084 -0.062086180 -2.407356819  3.903779556
+    ##  [31]  0.040247629 -5.773537496  0.885906179 -2.618243141  1.398372062
+    ##  [36]  1.009131451 -0.344339014  1.146525614 -0.219880091 -2.232801844
+    ##  [41]  0.746270236  1.107355867  2.592266950  1.518435292 -0.645679882
+    ##  [46] -1.306485680  2.726627311  0.094758091  0.267423445 -3.057612029
+    ##  [51] -0.901885842  2.687984856 -4.867732710 -3.404211466 -2.437866876
+    ##  [56]  1.746330157 -2.185251147  2.448291120  4.882013776 -2.482436968
+    ##  [61]  0.909556799 -0.436675328 -0.592407779  3.134458304  0.031986011
+    ##  [66]  1.608761957  0.735897141 -0.628819783  2.671384644 -1.403016962
+    ##  [71]  0.602129692 -0.785526144  3.816712839 -0.001282314 -0.750214757
+    ##  [76] -2.017312948 -3.650639368  2.793154566 -2.302617372  0.258785782
+    ##  [81] -0.471231177  0.877329039 -4.169364549  0.942577343  1.500959503
+    ##  [86]  0.878771496 -3.816169086  3.050950728  1.092635762  1.574721316
+    ##  [91] -1.596626394 -3.361076768 -1.722913653 -2.853094295 -2.670713618
+    ##  [96] -1.461636830 -2.554905809 -2.188963034  0.693504373  3.023066529
 
 ``` r
 mean(x*2)
 ```
 
-    ## [1] 0.04809145
+    ## [1] -0.2935356
 
 ``` r
 sd(x)
 ```
 
-    ## [1] 1.030694
+    ## [1] 1.103465
 
 ``` r
 sd(x*2)
 ```
 
-    ## [1] 2.061387
+    ## [1] 2.20693
 
 Exercise 2. Read the individual wave 8 UndSoc data and extract the
 variable for age from the data frame. What type is it?
@@ -98,6 +130,7 @@ variable for age from the data frame. What type is it?
 ``` r
 library(tidyverse)
 df <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w8/h_indresp.tab")
+
 df %>% pull(h_age_dv) %>% typeof()
 ```
 
@@ -120,6 +153,25 @@ df %>% pull(h_age_dv) %>% table()
     ##  10   5   5   2   3   3   2
 
 ``` r
+df %>% count(h_age_dv)
+```
+
+    ## # A tibble: 87 x 2
+    ##    h_age_dv     n
+    ##       <dbl> <int>
+    ##  1       16   554
+    ##  2       17   625
+    ##  3       18   584
+    ##  4       19   566
+    ##  5       20   536
+    ##  6       21   542
+    ##  7       22   556
+    ##  8       23   559
+    ##  9       24   552
+    ## 10       25   494
+    ## # … with 77 more rows
+
+``` r
 age <- df %>% pull(h_age_dv)
 typeof(age)
 ```
@@ -127,11 +179,18 @@ typeof(age)
     ## [1] "double"
 
 ``` r
-age <- as.integer(age)
-typeof(age)
+age.int <- as.integer(age)
+typeof(age.int)
 ```
 
     ## [1] "integer"
+
+``` r
+age2 <- as.double(age.int)
+typeof(age2)
+```
+
+    ## [1] "double"
 
 Logical vectors.
 
@@ -140,6 +199,20 @@ the proportion of men in the data set.
 
 ``` r
 sex <- df %>% pull(h_sex_dv)
+typeof(sex)
+```
+
+    ## [1] "double"
+
+``` r
+table(sex)
+```
+
+    ## sex
+    ##     0     1     2 
+    ##     2 17922 21369
+
+``` r
 male <- ifelse(sex == 1, TRUE, FALSE)
 head(male)
 ```
@@ -212,6 +285,13 @@ x
 
 ``` r
 y <- c("1", "a", "2")
+
+as.numeric(x)
+```
+
+    ## [1] 1 2 3 4 5 6
+
+``` r
 as.numeric(y)
 ```
 
@@ -223,7 +303,15 @@ Exercise 5. Convert sex into a factor. Change the order of levels.
 
 ``` r
 library(forcats)
+
 sex_fct <- factor(sex_chr)
+head(sex_fct)
+```
+
+    ## [1] female female female male   female female
+    ## Levels: female male
+
+``` r
 typeof(sex_fct)
 ```
 
@@ -305,7 +393,24 @@ byRegion <- df %>%
     medianIncome = median(h_fimnnet_dv, na.rm = TRUE)
   )
 
+typeof(byRegion)
+```
 
+    ## [1] "list"
+
+``` r
+byRegion %>% pull(region) %>% typeof()
+```
+
+    ## [1] "character"
+
+``` r
+byRegion %>% pull(medianIncome) %>% typeof()
+```
+
+    ## [1] "double"
+
+``` r
 # not ordered
 byRegion %>%
   ggplot(
@@ -412,7 +517,7 @@ df %>%
 df %>%
   mutate(h_gor_dv = factor(h_gor_dv)) %>%
   mutate(region = fct_recode(h_gor_dv,
-                         NULL = "-9",
+                         "no data" = "-9",
                          "North East" = "1",
                          "North West" = "2",
                          "Yorkshire" = "3",
@@ -421,7 +526,7 @@ df %>%
                          "East of England" = "6",
                          "London" = "7",
                          "South East" = "8",
-                         "Souh West" = "9",
+                         "South West" = "9",
                          "Wales" = "10",
                          "Scotland" = "11",
                          "Northern Ireland" = "12")) %>%
@@ -431,19 +536,19 @@ df %>%
     ## # A tibble: 13 x 2
     ##    region               n
     ##    <fct>            <int>
-    ##  1 North East        1355
-    ##  2 North West        3963
-    ##  3 Yorkshire         3461
-    ##  4 East Midlands     2717
-    ##  5 West Midlands     3355
-    ##  6 East of England   3192
-    ##  7 London            5414
-    ##  8 South East        4536
-    ##  9 Souh West         3015
-    ## 10 Wales             2522
-    ## 11 Scotland          3198
-    ## 12 Northern Ireland  2550
-    ## 13 <NA>                15
+    ##  1 no data             15
+    ##  2 North East        1355
+    ##  3 North West        3963
+    ##  4 Yorkshire         3461
+    ##  5 East Midlands     2717
+    ##  6 West Midlands     3355
+    ##  7 East of England   3192
+    ##  8 London            5414
+    ##  9 South East        4536
+    ## 10 South West        3015
+    ## 11 Wales             2522
+    ## 12 Scotland          3198
+    ## 13 Northern Ireland  2550
 
 ``` r
 # Note the warning message and the order of the levels.
@@ -454,9 +559,9 @@ df %>%
   mutate(h_gor_dv = factor(h_gor_dv)) %>%
   mutate(region = fct_collapse(h_gor_dv,
                          NULL = "-9",
-                         England = c("1", "2", "3", "4", "5", "6", "7", "8", "9"),
-                         Wales = c("10"),
-                         Scotland = c("11"),
+                         "England" = c("1", "2", "3", "4", "5", "6", "7", "8", "9"),
+                         "Wales" = c("10"),
+                         "Scotland" = c("11"),
                          "Northern Ireland" = c("12"))) %>%
   count(region)
 ```
@@ -482,8 +587,17 @@ x
     ## [2,]    2    4    6    8   10
 
 ``` r
-y <- data.frame(x = c(TRUE, FALSE, TRUE), y = 1:3, z = letters[1:3])
-y
+x <- matrix(1:10, nrow = 2, byrow = TRUE)
+x
+```
+
+    ##      [,1] [,2] [,3] [,4] [,5]
+    ## [1,]    1    2    3    4    5
+    ## [2,]    6    7    8    9   10
+
+``` r
+k <- data.frame(x = c(TRUE, FALSE, TRUE), y = 1:3, z = letters[1:3])
+k
 ```
 
     ##       x y z
@@ -658,3 +772,7 @@ typeof(m1$coefficients)
 ```
 
     ## [1] "double"
+
+``` r
+coef_m1 <- m1$coefficients
+```
