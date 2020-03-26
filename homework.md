@@ -50,6 +50,7 @@ In this file I will list home assignments you need to to **before** coming to cl
 
 #### 25 March
 
+- Ch. 20 (Vectors) from R for Data Science: https://r4ds.had.co.nz/vectors.html
 - Ch. 14 (Strings) from R for Data Science: https://r4ds.had.co.nz/strings.html
 
 
