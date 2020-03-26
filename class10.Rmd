@@ -1,0 +1,292 @@
+---
+title: 'Data Analysis 3: Week 11 (1)'
+author: "Alexey Bessudnov"
+date: "25 March 2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+Plan for this session:
+
+1. Vectors and other data types.
+2. Factors.
+
+
+- Types of variables in social science research.
+
+- R data structures.
+
+- Vectors.
+
+Numeric (integer and double). Vectorisation.
+
+```{r}
+x <- 1:6
+typeof(x)
+length(x)
+y <- c(1.2, 1.5, 2.76)
+typeof(y)
+length(y)
+x*2
+x + y
+```
+
+Exercise 1. Create a vector of length 100, randomly drawing it from the standard normal distribution. Find the mean and standard deviation. Multiply the vector by 2. Are the mean and standard deviation going to change?
+
+```{r}
+x <- rnorm(100)
+head(x)
+mean(x)
+mean(x*2)
+sd(x)
+sd(x*2)
+```
+
+Exercise 2. Read the individual wave 8 UndSoc data and extract the variable for age from the data frame. What type is it?
+
+```{r}
+library(tidyverse)
+df <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w8/h_indresp.tab")
+df %>% pull(h_age_dv) %>% typeof()
+df %>% pull(h_age_dv) %>% table()
+age <- df %>% pull(h_age_dv)
+typeof(age)
+age <- as.integer(age)
+typeof(age)
+```
+
+Logical vectors.
+
+Exercise 3. Convert sex into a logical vector for being male. Calculate the proportion of men in the data set.
+
+```{r}
+sex <- df %>% pull(h_sex_dv)
+male <- ifelse(sex == 1, TRUE, FALSE)
+head(male)
+typeof(male)
+TRUE == 1
+FALSE == 0
+mean(male)
+```
+
+Character vectors.
+
+Exercise 4. Convert sex into a character vector with the values "male" and "female".
+
+```{r}
+sex_chr <- ifelse(sex == 1, "male",
+                  ifelse(sex == 2, "female", NA))
+typeof(sex_chr)
+x <- 1:6
+x
+x <- as.character(x)
+x
+mean(x)
+x <- as.numeric(x)
+x
+y <- c("1", "a", "2")
+as.numeric(y)
+```
+
+Factors (augmented numeric).
+
+Exercise 5. Convert sex into a factor. Change the order of levels.
+
+```{r}
+library(forcats)
+sex_fct <- factor(sex_chr)
+typeof(sex_fct)
+class(sex_fct)
+str(sex_fct)
+levels(sex_fct)
+sex_fct2 <- factor(sex_chr, levels = c("male", "female"))
+levels(sex_fct2)
+sex_fct3 <- fct_relevel(sex_chr, "male")
+levels(sex_fct3)
+sex_fct3 %>%
+  as_tibble() %>%
+  filter(!is.na(sex_fct3)) %>%
+  ggplot(aes(x = value)) +
+  geom_bar()
+sex_fct %>%
+  as_tibble() %>%
+  filter(!is.na(sex_fct3)) %>%
+  ggplot(aes(x = value)) +
+  geom_bar()
+```
+
+Re-ordering factors is useful for producing graphs.
+
+```{r}
+byRegion <- df %>%
+  mutate(region = recode(h_gor_dv,
+                         `-9` = NA_character_,
+                         `1` = "North East",
+                         `2` = "North West",
+                         `3` = "Yorkshire",
+                         `4` = "East Midlands",
+                         `5` = "West Midlands",
+                         `6` = "East of England",
+                         `7` = "London",
+                         `8` = "South East",
+                         `9` = "Souh West",
+                         `10` = "Wales",
+                         `11` = "Scotland",
+                         `12` = "Northern Ireland")) %>%
+  filter(!is.na(region)) %>%
+  group_by(region) %>%
+  summarise(
+    medianIncome = median(h_fimnnet_dv, na.rm = TRUE)
+  )
+
+
+# not ordered
+byRegion %>%
+  ggplot(
+    aes(x = region, y = medianIncome)
+    ) +
+    geom_bar(stat = "identity") +
+    xlab("") +
+    ylab("Median net monthly personal income") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# ordered (1)
+
+byRegion %>%
+ggplot(
+  aes(x = reorder(region, medianIncome), y = medianIncome)
+  ) +
+  geom_bar(stat = "identity") +
+  xlab("") +
+  ylab("Median net monthly personal income") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# ordered (2)
+
+byRegion %>%
+ggplot(
+  aes(x = fct_reorder(region, medianIncome), y = medianIncome)
+  ) +
+  geom_bar(stat = "identity") +
+  xlab("") +
+  ylab("Median net monthly personal income") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# in the decreasing order
+
+byRegion %>%
+ggplot(
+  aes(x = fct_reorder(region, -medianIncome), y = medianIncome)
+  ) +
+  geom_bar(stat = "identity") +
+  xlab("") +
+  ylab("Median net monthly personal income") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+Recoding factors.
+
+```{r}
+# We've already recoded region in the example above.
+
+df %>%
+  mutate(region = recode(h_gor_dv,
+                         `-9` = NA_character_,
+                         `1` = "North East",
+                         `2` = "North West",
+                         `3` = "Yorkshire",
+                         `4` = "East Midlands",
+                         `5` = "West Midlands",
+                         `6` = "East of England",
+                         `7` = "London",
+                         `8` = "South East",
+                         `9` = "Souh West",
+                         `10` = "Wales",
+                         `11` = "Scotland",
+                         `12` = "Northern Ireland")) %>%
+  count(region)
+
+# Note that the levels have been arranged alphabetically.
+
+# Another way to recode from forcats.
+
+df %>%
+  mutate(h_gor_dv = factor(h_gor_dv)) %>%
+  mutate(region = fct_recode(h_gor_dv,
+                         NULL = "-9",
+                         "North East" = "1",
+                         "North West" = "2",
+                         "Yorkshire" = "3",
+                         "East Midlands" = "4",
+                         "West Midlands" = "5",
+                         "East of England" = "6",
+                         "London" = "7",
+                         "South East" = "8",
+                         "Souh West" = "9",
+                         "Wales" = "10",
+                         "Scotland" = "11",
+                         "Northern Ireland" = "12")) %>%
+  count(region)
+
+# Note the warning message and the order of the levels.
+
+# Sometimes you may want to combine the levels
+
+df %>%
+  mutate(h_gor_dv = factor(h_gor_dv)) %>%
+  mutate(region = fct_collapse(h_gor_dv,
+                         NULL = "-9",
+                         England = c("1", "2", "3", "4", "5", "6", "7", "8", "9"),
+                         Wales = c("10"),
+                         Scotland = c("11"),
+                         "Northern Ireland" = c("12"))) %>%
+  count(region)
+
+
+```
+
+
+Matrices and data frames.
+
+```{r}
+x <- matrix(1:10, nrow = 2)
+x
+y <- data.frame(x = c(TRUE, FALSE, TRUE), y = 1:3, z = letters[1:3])
+y
+``` 
+
+Lists.
+
+Exercise 6. Make a list of four elements containing: 1) the vector from exercise 1, 2) the vector from exercise 3, 3) TRUE, 4) a list with your name and your surname.
+
+```{r}
+l1 <- list(x, sex_chr, TRUE, list("Alexey", "Bessudnov"))
+str(l1)
+a <- l1[2]
+typeof(a)
+b <- l1[[2]]
+typeof(b)
+l1[[4]][[2]]
+```
+
+
+Exercise 7. Regress earnings on age and age squared. Extract regression coefficients as a vector.
+
+```{r}
+m1 <- lm(h_fimnnet_dv ~ h_age_dv + I(h_age_dv^2), df)
+m1
+summary(m1)
+typeof(m1)
+str(m1)
+m1$coefficients
+m1[[1]]
+typeof(m1$coefficients)
+```
+
