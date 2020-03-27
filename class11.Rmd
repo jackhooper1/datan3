@@ -1,0 +1,158 @@
+---
+title: 'Data Analysis 3: Week 11'
+author: "Alexey Bessudnov"
+date: "27 March 2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+**Longitudinal data: political interest**
+
+Example from class 5.
+
+```{r}
+library(tidyverse)
+# Read data and select variables
+Ind1 <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w1/a_indresp.tab")
+Ind1 <- Ind1 %>%
+  select(pidp, a_sex_dv, a_age_dv, a_vote6)
+Ind2 <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w2/b_indresp.tab")
+Ind2 <- Ind2 %>%
+  select(pidp, b_sex_dv, b_age_dv, b_vote6)
+Ind3 <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w3/c_indresp.tab")
+Ind3 <- Ind3 %>%
+  select(pidp, c_sex_dv, c_age_dv, c_vote6)
+Wide <- Ind1 %>%
+  full_join(Ind2, by = "pidp") %>%
+  full_join(Ind3, by = "pidp")
+Wide
+# convert to long
+Long <- Wide %>%
+  gather(a_sex_dv:c_vote6, key = "variable", value = "value") %>%
+  separate(variable, into = c("wave", "variable"), sep = "_", extra = "merge") %>%
+  spread(key = variable, value = value)
+Long
+```
+
+You may want to use some inequality/heterogeneity measure to explore the stability of political interest at individual level (variance? Theil's enthropy?). You may also want to visualise changes in political interest.
+
+If you treat political interest as categorical it is possible to use sequence anaysis: http://traminer.unige.ch (this would be a complex analysis and you do not have to do this).
+
+To determine how political interest changes depending on the electoral cycle you'd need to identify the interview dates.
+
+```{r}
+Ind1 <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w1/a_indresp.tab")
+
+Ind1 %>%
+  select(pidp, a_intdatd_dv, a_intdatm_dv, a_intdaty_dv) %>%
+  print(n = 10)
+
+```
+
+Note that the timing of different waves can overlap.
+
+
+**Childbirth and satisfaction**
+
+The key thing here is to identify new childbirths. Note the *newborn* data sets: https://www.understandingsociety.ac.uk/documentation/mainstage/dataset-documentation/search/datafile/newborn. You want to create a data frame that includes only new mothers and fathers.
+
+```{r}
+newborn2 <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w2/b_newborn.tab")
+```
+At this stage you may want to filter out those who don't live with their children or whose children died.
+
+```{r}
+# identify new parents in wave 2
+newparent2 <- Ind2 %>%
+        semi_join(newborn2, by = "pidp")
+newparent2 %>%
+  ggplot(aes(x = b_age_dv)) +
+        geom_density() +
+        facet_wrap(~ b_sex_dv)
+```
+
+We can also look at how political interest changes in the wave following the childbirth. 
+
+```{r}
+newparent2 <- newparent2 %>%
+        left_join(Ind3, by = "pidp") %>%
+        filter(c_vote6 > 0 & b_vote6 > 0) %>%
+        mutate(polIntChange = c_vote6 - b_vote6)
+qplot(newparent2$polIntChange)
+newparent2 %>%
+        group_by(b_sex_dv) %>%
+        summarise(
+                meanChange = mean(polIntChange, na.rm = TRUE)
+        )
+        
+```
+
+Things will become more complex when you've got the data from all waves.
+
+**Combination of individual- and household-level data: household composition by ethnic group.**
+
+```{r}
+Egoalt1 <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w1/a_egoalt.tab")
+```
+
+Let us look at the household with a_hidp 68006123.
+
+```{r}
+oneHH <- Egoalt1 %>%
+        filter(a_hidp == 68006123) %>%
+        select(a_hidp, pidp, apidp, a_relationship_dv, a_sex, a_asex)
+oneHH
+```
+
+This is a household with four people: a couple with two children (so the relationships are 2 (partner/cohabitee), 9 (parent), 12 (step-parent), 4 (natural son/daughter), 7 (stepson/stepdaughter), 14 (natural brother/sister). More specifically, it's a woman with two daughters and their step-father, the woman's partner (they are not married).
+
+The key thing here is to write a code that identifies a household type from this information. Then you can look at the distribution of the types by ethnic group. Note that ethnic group is an individual, not household characteristics, so you will need to develop some rules on how you deal with ethnically mixed households.
+
+As an example, let us calculate the number of people in the household by ethnic group.
+
+```{r}
+Ind1new <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w1/a_indresp.tab")
+Ind1new <- Ind1new %>%
+  select(pidp, a_hidp, a_sex_dv, a_age_dv, a_racel_dv)
+Ind1new %>%
+        group_by(a_hidp) %>%
+        mutate(nhh = n()) %>%
+        group_by(a_racel_dv) %>%
+        summarise(hhsize = mean(nhh, na.rm = TRUE))
+```
+
+This is actually not quite correct (since ethnicity is an individual-level variable) and you will be able to do better than this.
+
+Let us get some more details on household 68006123.
+
+```{r}
+oneHH %>%
+        left_join(Ind1new, by = c("a_hidp", "pidp"))
+```
+
+So the woman is 39 years old and of her daughters is 17. They are both White British. The male partner and the other daughter were not interviewed. We might get some more informatiom about them from the *indall* file.
+
+```{r}
+Indall1 <- read_tsv("data/UKDA-6614-tab/tab/ukhls_w1/a_indall.tab") %>%
+        filter(a_hidp == 68006123) %>%
+        select(a_hidp, pidp, a_sex_dv, a_age_dv, a_ethn_dv)
+Indall1
+```
+
+The male partner is 34 and the other daughter is 14. They are also White British.
+
+You want to use the **indall** rather than **indresp** files for this question.
+
+You may also want to use household composition variables from hhresp files: https://www.understandingsociety.ac.uk/documentation/mainstage/dataset-documentation/search/datafile/hhresp
+
+Note that some household only have one person so they won't be reflected in the egoalt files.
+
+
+
+
