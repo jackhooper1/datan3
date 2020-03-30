@@ -2,7 +2,7 @@
 title: 'Data Analysis 3: Week 11'
 author: "Alexey Bessudnov"
 date: "27 March 2020"
-output: github_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -38,6 +38,10 @@ Long <- Wide %>%
   separate(variable, into = c("wave", "variable"), sep = "_", extra = "merge") %>%
   spread(key = variable, value = value)
 Long
+
+Long %>%
+  count(vote6)
+
 ```
 
 You may want to use some inequality/heterogeneity measure to explore the stability of political interest at individual level (variance? Theil's enthropy?). You may also want to visualise changes in political interest.

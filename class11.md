@@ -64,6 +64,24 @@ Long
     ## 10 665045 a         NA     NA    NA
     ## # … with 211,748 more rows
 
+``` r
+Long %>%
+  count(vote6)
+```
+
+    ## # A tibble: 9 x 2
+    ##   vote6     n
+    ##   <dbl> <int>
+    ## 1    -9   263
+    ## 2    -7 10973
+    ## 3    -2   130
+    ## 4    -1   134
+    ## 5     1 14178
+    ## 6     2 48427
+    ## 7     3 41235
+    ## 8     4 39915
+    ## 9    NA 56503
+
 You may want to use some inequality/heterogeneity measure to explore the
 stability of political interest at individual level (variance? Theil’s
 enthropy?). You may also want to visualise changes in political
