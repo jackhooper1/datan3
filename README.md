@@ -32,7 +32,6 @@ The only way to learn data analysis is to do data analysis. I will not be able t
 
 Every Monday I'll upload on ELE a video introducing new material, with links to readings and exercises. You will have a week to watch the video and do exercises. Then in our online class I will answer your questions and will work together on additional exercises.
 
-
 #### Software
 
 Please install the following software.
@@ -43,6 +42,10 @@ Please install the following software.
 - [LaTeX](https://www.latex-project.org/)
 
 All this software is free. 
+
+#### Data
+
+We will use data from the Understanding Society survey. You should download the data from the UK Data Service website (study number 6614): https://beta.ukdataservice.ac.uk/datacatalogue/studies/study?id=6614 . You will need to log in to the UK Data Service using your Exeter credentials, add this data set to a new project (providing its brief description) and download the data in the tabular format.
 
 #### Attendance
 
