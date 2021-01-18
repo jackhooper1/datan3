@@ -1,10 +1,20 @@
 ---
 title: "Data Analysis in Social Science  (18 January)"
-output: github_document
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(cache = TRUE)
+
+
+
 ```
 
 ## Class on 18 January
@@ -21,41 +31,33 @@ head(USArrests)
 1. Extract a vector with the names of the states.
 
 ```{r}
+USArrests
+str(USArrests)
+stateNames <- row.names(USArrests)
+stateNames
+class(stateNames)
 
+USArrests$stateNames <- row.names(USArrests)
+USArrests
 ```
 
 2. Create a new data set that only includes states with the murder rate > 10.
 
 ```{r}
+USArrests
+USArrests[, 5]
+USArrests[USArrests$Murder > 10,]
+subset(USArrests, USArrests$Murder > 10)
 
 ```
 
 3. Create a new data set that only includes the first 15 states in the original data set.
 
 ```{r}
-
+USArrests[1:15,]
 ```
 
-4. Recode Rape into a new variable with the values "low" (< 15), "medium" (>= 15 & < 25) and "high" (> 25).
+4. Knit your document as pdf, html and Word files.
 
-```{r}
+5. Change the document settings so that the code is not displayed, and messages and warnings are not shown. Set cache to TRUE. When do you want to use cache? Can you change these settings for individual chunks of code?
 
-```
-
-5. Create a scatter plot showing the association between the percentage of urban population and the murder rate.
-
-```{r}
-
-```
-
-6. Knit your document as pdf, html and Word files.
-
-```{r}
-
-```
-
-7. Change the document settings so that the code is not displayed, and messages and warnings are not shown. Set cache to TRUE. When do you ant to use cache? Can you change these settings for individuals chunks of code?
-
-```{r}
-
-```
