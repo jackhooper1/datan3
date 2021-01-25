@@ -1,0 +1,31 @@
+---
+title: "Data Analysis in Social Science  (25 January)"
+output:
+  github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Exercise 1.
+
+Open the xwavedat.tab data set in the ukhls_wx folder. What data does it contain? 
+
+```{r}
+library(tidyverse)
+```
+
+## Exercise 2.
+
+Open the j_egoalt data set in the ukhls_w10 folder. What data does it contain? 
+```{r}
+```
+
+## Exercise 3.
+
+Open the text of Hamlet in R: https://www.gutenberg.org/files/27761/27761-h/27761-h.htm
+
+The first row should contain "Ber. Who's there?"
+The last row should contain "THE END".
+
