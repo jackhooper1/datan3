@@ -1,0 +1,61 @@
+---
+title: "Data Analysis in Social Science  (1 February)"
+output:
+  github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r}
+library(tidyverse)
+dfStable <- read_tsv("UKDA-6614-tab/tab/ukhls_wx/xwavedat.tab")
+```
+
+This is a cross-wave data file with stable characteristics of individuals. See the codebook at https://www.understandingsociety.ac.uk/documentation/mainstage/dataset-documentation/search/datafile/xwavedat.
+
+Exercises.
+
+1. Select the variables for: sex (derived), date of birth (doby_dv), ethnic group (racel_dv). Also keep the cross-wave identifier (pidp) and the sample origin variable (memorig).
+
+    ```{r}
+
+    ```
+
+2. Filter the data to keep:
+        a) men only.
+        b) people born before 1950 and after 1975.
+        c) men of Pakistani origin born in 1958 or 1982. 
+
+
+    ```{r}
+
+    ```
+
+3. Recode birth year into cohorts (a new variable): the G.I. Generation (born before 1924), Silent Generation (1925-42), Baby Boomers (1943-65), Generation X (1966-1980), Millenials (1981-99), Generation Z (2000-). (The years are approximate.)
+
+    ```{r}
+
+    ```
+
+4. Recode ethnicity into the following groups: white British, Other White, Indian, Pakistani, other. (This classification doesn't make much sense, but we're doing this as an exercise).
+
+
+    ```{r}
+
+        
+    ```
+
+
+5. Count the number of people belonging to different ethnic groups (and produce percentages). 
+
+    ```{r}
+
+    ```
+
+6. Summarise the proportion of white British by generation.
+
+    ```{r}
+
+    ```
