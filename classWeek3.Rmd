@@ -5,7 +5,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Exercise 1.
@@ -14,12 +14,23 @@ Open the xwavedat.tab data set in the ukhls_wx folder. What data does it contain
 
 ```{r}
 library(tidyverse)
+library(vroom)
+
+df <- read_tsv("UKDA-6614-tab/tab/ukhls_wx/xwavedat.tab")
+
+# or
+
+df <- vroom("UKDA-6614-tab/tab/ukhls_wx/xwavedat.tab")
+
 ```
 
 ## Exercise 2.
 
 Open the j_egoalt data set in the ukhls_w10 folder. What data does it contain? 
+
 ```{r}
+jegoalt <- read_tsv("UKDA-6614-tab/tab/ukhls_w10/j_egoalt.tab")
+
 ```
 
 ## Exercise 3.
@@ -27,5 +38,17 @@ Open the j_egoalt data set in the ukhls_w10 folder. What data does it contain?
 Open the text of Hamlet in R: https://www.gutenberg.org/files/27761/27761-h/27761-h.htm
 
 The first row should contain "Ber. Who's there?"
-The last row should contain "THE END".
 
+```{r}
+
+Hamlet <- read_lines("https://www.gutenberg.org/files/27761/27761-h/27761-h.htm")
+Hamlet[1:10]
+# "Ber. Who's there?" in line 553
+
+Hamlet2 <- read_lines("https://www.gutenberg.org/files/27761/27761-h/27761-h.htm",
+                     skip = 552)
+Hamlet2[1:10]
+
+# This example is just to demonstrate that you can read different types of data into R. 
+
+```
