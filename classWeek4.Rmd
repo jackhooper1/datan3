@@ -5,7 +5,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
@@ -20,7 +20,8 @@ Exercises.
 1. Select the variables for: sex (derived), date of birth (doby_dv), ethnic group (racel_dv). Also keep the cross-wave identifier (pidp) and the sample origin variable (memorig).
 
     ```{r}
-
+dfStable1 <- dfStable %>%
+      select(pidp, memorig, sex_dv, doby_dv, racel_dv)
     ```
 
 2. Filter the data to keep:
@@ -30,12 +31,38 @@ Exercises.
 
 
     ```{r}
-
+# a)
+    dfStable1 %>%
+      filter(sex_dv == 1)
+# b)
+    dfStable1 %>% count(doby_dv)
+    dfStable1 %>%
+      filter(doby_dv > 0) %>% 
+      filter(doby_dv < 1950 | doby_dv > 1975)
+# c)
+    dfStable1 %>%
+      filter(sex_dv == 1) %>%
+      filter(racel_dv == 10) %>%
+      filter(doby_dv == 1958 | doby_dv == 1982)
+    
+    dfStable1 %>%
+      filter(sex_dv == 1 & racel_dv == 10 & (doby_dv == 1958 | doby_dv == 1982))
     ```
 
 3. Recode birth year into cohorts (a new variable): the G.I. Generation (born before 1924), Silent Generation (1925-42), Baby Boomers (1943-65), Generation X (1966-1980), Millenials (1981-99), Generation Z (2000-). (The years are approximate.)
 
     ```{r}
+dfStable1 <-  dfStable1 %>%
+      mutate(cohort = case_when(
+        doby_dv > 0 & doby_dv < 1924 ~ "G.I.Generation",
+        between(doby_dv, 1925, 1942) ~ "Silent generation",
+        doby_dv %in% 1943:1965 ~ "Baby boomers",
+        doby_dv %in% 1966:1980 ~ "Generation X",
+        doby_dv %in% 1981:1999 ~ "Millenials",
+        doby_dv > 2000 ~ "Generation Z"
+      ))
+    
+dfStable1 %>% count(cohort)
 
     ```
 
@@ -43,7 +70,19 @@ Exercises.
 
 
     ```{r}
-
+dfStable1 <- dfStable1 %>%
+      mutate(ethnNew = recode(racel_dv,
+        '1' = "White British",
+        '2' = "other White",
+        '3' = "other White",
+        '4' = "other White",
+        '9' = "Indian",
+        '10' = "Pakistani",
+        '-9' = NA_character_,
+        .default = "other"
+      ))
+    
+dfStable1 %>% count(ethnNew)
         
     ```
 
@@ -51,11 +90,19 @@ Exercises.
 5. Count the number of people belonging to different ethnic groups (and produce percentages). 
 
     ```{r}
-
+dfStable1 %>%
+  count(ethnNew) %>%
+  mutate(perc = n / sum(n) * 100)
     ```
 
 6. Summarise the proportion of white British by generation.
 
     ```{r}
-
+dfStable1 %>%
+  filter(racel_dv != -9) %>%
+  mutate(whiteBritish = ifelse(racel_dv == 1, 1, 0)) %>%
+  group_by(cohort) %>%
+  summarise(
+propWhiteBritish = mean(whiteBritish, na.rm = TRUE) * 100
+  )
     ```
