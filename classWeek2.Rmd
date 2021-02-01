@@ -1,19 +1,13 @@
 ---
 title: "Data Analysis in Social Science  (18 January)"
 output:
-  html_document:
-    df_print: paged
-  word_document: default
-  pdf_document: default
+  github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
-knitr::opts_chunk$set(cache = TRUE)
-
-
 
 ```
 
