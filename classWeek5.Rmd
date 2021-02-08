@@ -13,26 +13,95 @@ library(tidyverse)
 library(vroom)
 ```
 
-
 Exercises.
 
-1) Calculate the average age of parents (separately for women and men) of children born between waves 9 and 10. Use the j_newborn data table: https://www.understandingsociety.ac.uk/documentation/mainstage/dataset-documentation/search/datafile/newborn. 
-Then identify the chidren's parents using j_egoalt.tab.
-Then find their age in the j_indall file.
+1) Calculate the average age of parents (separately for women and men) of children born between waves 9 and 10.
 
     ```{r}
+# Read the data for newborn children (born between waves 9 and 10).
+# Observations are at the parent level.
+    
+newborn10 <- vroom("UKDA-6614-tab/tab/ukhls_w10/j_newborn.tab")
 
+# Read the data with people's age.
+    
+indall10 <- vroom("UKDA-6614-tab/tab/ukhls_w10/j_indall.tab")
+
+# Use semi_join (filtering join) to keep only new parents in the data set.
+
+indall10 %>%
+  semi_join(newborn10, by = "pidp") %>%
+  # split by gender
+  group_by(j_sex) %>%
+  # filter out missing ages
+  filter(j_age_dv > 0) %>%
+  # calculate mean age
+  summarise(
+    meanAge = mean(j_age_dv, na.rm = TRUE)
+  )
     ```
 
 2) Split the table by ethnic group for the following groups: White British, Indian, Pakistani, Bangladeshi, and African.
 
     ```{r}
+# ethnicity is recoded in the cross-wave file
+stable <- vroom("UKDA-6614-tab/tab/ukhls_wx/xwavedat.tab",
+                col_select = c(pidp, racel_dv))
 
+indall10 %>%
+  semi_join(newborn10, by = "pidp") %>%
+  # join with ethnicity data
+  left_join(stable, by = "pidp") %>%
+  # keep only some ethnic groups
+  filter(racel_dv %in% c(1, 9, 10, 11, 15)) %>%
+  # group by ethnicity and sex
+  group_by(racel_dv, j_sex) %>%
+  # filter out missing ages
+  filter(j_age_dv > 0) %>%
+  # calculate mean age
+  summarise(
+    meanAge = mean(j_age_dv, na.rm = TRUE)
+  )
+
+# alternatively, you can us ethe variable j_ethn_dv in indall10
+
+indall10 %>%
+  semi_join(newborn10, by = "pidp") %>%
+  filter(j_ethn_dv %in% c(1, 9, 10, 11, 15)) %>%
+  # group by ethnicity and sex
+  group_by(j_ethn_dv, j_sex) %>%
+  # filter out missing ages
+  filter(j_age_dv > 0) %>%
+  # calculate mean age
+  summarise(
+    meanAge = mean(j_age_dv, na.rm = TRUE)
+  )
     ```
 
-3) Produce a data table that includes only twins born between waves 9 and 10. How many observations have we got? How does the age of their parents compare with the age of parents of non-twin children?
+3) Produce a data table that includes only twins born between waves 9 and 10. How does the age of their parents compare with the age of parents of non-twin children?
 
     ```{r}
+twins <- newborn10 %>%
+      # find parents with more than one new child
+      group_by(pidp) %>%
+      # create a variable with the number of children per parent
+      mutate(n_children = n()) %>%
+      # keep only those with > 1 children
+      filter(n_children > 1) %>%
+      select(pidp, n_children)
+
+# repeat as in ex.1 but only for the parents of twins.
+    
+indall10 %>%
+  semi_join(twins, by = "pidp") %>%
+  # split by gender
+  group_by(j_sex) %>%
+  # filter out missing ages
+  filter(j_age_dv > 0) %>%
+  # calculate mean age
+  summarise(
+    meanAge = mean(j_age_dv, na.rm = TRUE)
+  )
 
     ```
 
