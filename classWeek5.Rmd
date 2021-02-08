@@ -1,0 +1,38 @@
+---
+title: "Data Analysis in Social Science  (8 February)"
+output:
+  github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(vroom)
+```
+
+
+Exercises.
+
+1) Calculate the average age of parents (separately for women and men) of children born between waves 9 and 10. Use the j_newborn data table: https://www.understandingsociety.ac.uk/documentation/mainstage/dataset-documentation/search/datafile/newborn. 
+Then identify the chidren's parents using j_egoalt.tab.
+Then find their age in the j_indall file.
+
+    ```{r}
+
+    ```
+
+2) Split the table by ethnic group for the following groups: White British, Indian, Pakistani, Bangladeshi, and African.
+
+    ```{r}
+
+    ```
+
+3) Produce a data table that includes only twins born between waves 9 and 10. How many observations have we got? How does the age of their parents compare with the age of parents of non-twin children?
+
+    ```{r}
+
+    ```
+
