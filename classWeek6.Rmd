@@ -1,0 +1,36 @@
+---
+title: "Data Analysis in Social Science  (15 February)"
+output:
+  github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(vroom)
+```
+
+Exercises.
+
+1) Open the data for the first 5 waves of the UndSoc data (indresp files). We will need the following variables: pidp, sex_dv, age_dv, fimnnet_dv (total monthly personal income). Join the data sets together. Reshape to the long format.
+
+    ```{r}
+
+    ```
+
+2) Calculate mean income by sex across all five waves and save as a table with summary statistics. Reshape so that you have sexes in rows and waves in columns. Reshape so that you have waves in rows and sexes in columns. Calculate the difference between male and female income by wave.
+
+    ```{r}
+
+
+    ```
+    
+3) (Optional) Recode age into 10 year age groups (20-30, 31-40, 41-50, 51-60, 61-70). Calculate the difference between male and female income across age groups (for wave 5 only).
+
+    ```{r}
+
+
+    ```
