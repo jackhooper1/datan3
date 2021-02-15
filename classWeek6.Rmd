@@ -18,19 +18,54 @@ Exercises.
 1) Open the data for the first 5 waves of the UndSoc data (indresp files). We will need the following variables: pidp, sex_dv, age_dv, fimnnet_dv (total monthly personal income). Join the data sets together. Reshape to the long format.
 
     ```{r}
+w1 <- vroom("UKDA-6614-tab/tab/ukhls_w1/a_indresp.tab",
+            col_select = c(pidp, a_sex_dv, a_age_dv, a_fimnnet_dv))
+w2 <- vroom("UKDA-6614-tab/tab/ukhls_w2/b_indresp.tab",
+            col_select = c(pidp, b_sex_dv, b_age_dv, b_fimnnet_dv))
+w3 <- vroom("UKDA-6614-tab/tab/ukhls_w3/c_indresp.tab",
+            col_select = c(pidp, c_sex_dv, c_age_dv, c_fimnnet_dv))
+w4 <- vroom("UKDA-6614-tab/tab/ukhls_w4/d_indresp.tab",
+            col_select = c(pidp, d_sex_dv, d_age_dv, d_fimnnet_dv))
+w5 <- vroom("UKDA-6614-tab/tab/ukhls_w5/e_indresp.tab",
+            col_select = c(pidp, e_sex_dv, e_age_dv, e_fimnnet_dv))
+    
+Joined <- w1 %>%
+  full_join(w2, by = "pidp") %>%
+  full_join(w3, by = "pidp") %>%
+  full_join(w4, by = "pidp") %>%
+  full_join(w5, by = "pidp")
+
+Long <- Joined %>%
+  pivot_longer(a_sex_dv:e_fimnnet_dv, names_to = "variable",
+               values_to = "value") %>%
+  separate(variable, into = c("wave", "variable"), sep ="_",
+           extra = "merge") %>%
+  pivot_wider(names_from = variable, values_from = value)
+
+Long
 
     ```
 
 2) Calculate mean income by sex across all five waves and save as a table with summary statistics. Reshape so that you have sexes in rows and waves in columns. Reshape so that you have waves in rows and sexes in columns. Calculate the difference between male and female income by wave.
 
     ```{r}
-
-
-    ```
     
-3) (Optional) Recode age into 10 year age groups (20-30, 31-40, 41-50, 51-60, 61-70). Calculate the difference between male and female income across age groups (for wave 5 only).
+summary(Long$fimnnet_dv)
 
-    ```{r}
+tableIncome <- Long %>%
+      filter(sex_dv %in% 1:2) %>%
+      mutate(sex = ifelse(sex_dv == 1, "male", "female")) %>%
+      group_by(sex, wave) %>%
+      summarise(
+        meanIncome = mean(fimnnet_dv, na.rm = TRUE)
+      )
 
+tableIncome %>%
+  pivot_wider(names_from = wave, values_from = meanIncome)
+
+tableIncome %>%
+  pivot_wider(names_from = sex, values_from = meanIncome) %>%
+  mutate(femaleToMaleRatio = female / male)
 
     ```
+
