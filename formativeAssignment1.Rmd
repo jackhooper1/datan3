@@ -1,0 +1,366 @@
+---
+title: "Formative data assignment 1 (SSI2006/3002, 2020-21)"
+output: github_document
+---
+
+**Part I.**
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Open data (10 points)
+
+In this assignment you will work with the individual level data (the indresp file) from wave 8 of the Understanding Society survey. First, you need to open the data set. Please complete the code below.
+
+```{r}
+library(tidyverse)
+Data <- ...
+```
+
+Now you have got your data frame stored as Data. 
+
+## Select variables (10 points)
+
+The data for Wave 8 of the Understanding Society were collected in 2016-18. Among other things, people were asked the following question: "Should the United Kingdom remain a member of the European Union or leave the European Union?" In this assignment, we will explore how answers to this question depend on sex and age.
+
+First, you need to select the variables for the analysis. You want to keep the following variables: cross-wave individual identifier (*pidp*), support for the UK remaining or leaving the EU (*h_eumem*), sex (*h_sex_dv*), age (*h_age_dv*), and sample origin (*h_memorig*).
+
+Complete the code below to select those variables from the data frame and save the result.
+
+```{r}
+Data <- Data %>%
+        select(...)
+```
+
+## Filter observations (10 points)
+
+To make nationally representative estimates from the Understanding Society data we would need to use weight coefficients. There are many different types of weight coefficients that can be used depending on the question and the level of analysis (see the User Guide, pp. 65-71). We will not do this in this assignment. However, what we want to do is to keep data from the original Understanding Society sample only (ukhls gb 2009-10), dropping  data for Northern Ireland, the BHPS cohort members and ethnic minority boost samples. This will make data closer to be representative for Great Britain. You need to choose the observations where *h_memorig* has the value of 1.
+
+```{r}
+Data <- Data %>%
+        filter(...)
+```
+
+## Recode data (20 points)
+
+Let us tabulate the variables for EU support, sex, and age.
+
+```{r}
+table(Data$h_eumem)
+table(Data$h_sex_dv)
+table(Data$h_age_dv)
+```
+
+You will see that all these variables are numeric. You can learn what the numeric codes mean by checking the codebook here: https://www.understandingsociety.ac.uk/documentation/mainstage/dataset-documentation/datafile/indresp/wave/8 .
+
+We want to do the following:
+
+1) Recode the variable for EU support as binary (1 for Remain, 0 for Leave), coding all types of missing values (including refusals and "don't know") as NA.
+2) Recode sex into a character vector with the values "male" or "female".
+3) Recode age into a variable with the following categories: 16 to 25, 26 to 40, 41 to 55, 56 to 70, over 70.
+
+In all cases, we want to create new variables.
+
+```{r}
+Data <- Data %>%
+        mutate(EU = ...
+      
+        ) %>%
+        mutate(sex = ...) %>%
+        mutate(agegr = ...
+        )
+```
+
+## Summarise data (20 points)
+
+Let us **dplyr** to calculate how many people in the sample supported Remain and Leave, both as absolute numbers and percentages.
+
+```{r}
+Data %>%
+        ...
+        
+```
+
+Write a couple of sentences with the interpretation of this result. How this compares with the result of the 2016 referendum? Why?
+
+## Summarise data by sex and age (30 points)
+
+Now let us look at the support for Leave and Remain by sex and age. Use your newly created variables.
+
+
+```{r}
+Data %>%
+        ...
+        
+```
+
+Write a couple of sentences interpreting your results.
+
+
+**Part II.**
+
+
+## Read data
+
+We will work with three different tables: household roster from wave 8 (*h_egoalt*), stable characteristics of individuals (*xwavedat*), and household data from wave 8 (*h_hhresp*).
+
+```{r}
+# You need to complete the paths to these files on your computer.
+Egoalt8 <- read_tsv("...h_egoalt.tab")
+Stable <- read_tsv("...xwavedat.tab")
+Hh8 <- read_tsv("...h_hhresp.tab")
+```
+
+## Filter household roster data (10 points)
+
+The **egoalt8** data table contains data on the kin and other relationships between people in the same household. In each row in this table you will have a pair of individuals in the same household: ego (identified by *pidp*) and alter (identified by *apidp*). *h_relationship_dv* shows the type of relationship between ego and alter. You can check the codes in the Understanding Society codebooks here -- https://www.understandingsociety.ac.uk/documentation/mainstage/dataset-documentation.
+
+First we want to select only pairs of individuals who are husbands and wives or cohabiting partners (codes 1 and 2). For convenience, we also want to keep only the variables *pidp*, *apidp*, *h_hidp* (household identifier), *h_relationship_dv*, *h_esex* (ego's sex), and *h_asex* (alter's sex).
+
+```{r}
+Partners8 <- Egoalt8 %>%
+        filter(...) %>%
+        select(...)
+```
+
+Each couple now appears in the data twice: 1) with one partner as ego and the other as alter, 2) the other way round. Now we will only focus on heterosexual couples, and keep one observation per couple with women as egos and men as their alters.
+
+```{r}
+Hetero8 <- Partners8 %>%
+        # filter out same-sex couples
+        filter(...) %>%
+        # keep only one observation per couple with women as egos
+        filter(...)
+```
+
+## Recode data on ethnicity (10 points)
+
+In this assignment we will explore ethnic endogamy, i.e. marriages and partnerships within the same ethnic group. First, let us a create a version of the table with stable individual characteristics with two variables only: *pidp* and *racel_dv* (ethnicity).
+
+```{r}
+Stable2 <- Stable %>%
+        select(...)
+```
+
+Let's code missing values on ethnicity (-9) as NA.
+
+```{r}
+Stable2 <- Stable2 %>%
+        mutate(racel_dv = recode(racel_dv, `-9` = NA_real_))
+```
+
+Now let us recode the variable on ethnicity into a new binary variable with the following values: "White" (codes 1 to 4) and "non-White" (all other codes).
+
+```{r}
+Stable2 <- Stable2 %>%
+        mutate(race = ...)
+```
+
+## Join data (30 points)
+
+Now we want to join data from the household roster (*Hetero8*) and the data table with ethnicity (*Stable2*). First let us merge in the data on ego's ethnicity. We want to keep all the observations we have in *Hetero8*, but we don't want to add any other individuals from *Stable2*.
+
+```{r}
+JoinedEthn <- Hetero8 %>%
+        ...
+```
+
+Let us rename the variables for ethnicity to clearly indicate that they refer to egos.
+
+```{r}
+JoinedEthn <- JoinedEthn %>%
+        rename(egoRacel_dv = racel_dv) %>%
+        rename(egoRace = race)
+```
+
+Now let us merge in the data on alter's ethnicity. Note that in this case the key variables have different names in two data tables; please refer to the documentation for your join function (or the relevant section from R for Data Science) to check the solution for this problem.
+
+```{r}
+JoinedEthn <- JoinedEthn %>%
+        ...
+```
+
+Renaming the variables for alters.
+
+```{r}
+JoinedEthn <- JoinedEthn %>%
+        rename(alterRacel_dv = racel_dv) %>%
+        rename(alterRace = race)
+```
+
+## Explore probabilities of racial endogamy (20 points)
+
+Let us start by looking at the joint distribution of race (White vs. non-White) of both partners.
+
+```{r}
+TableRace <- JoinedEthn %>%
+        # filter out observations with missing data
+        filter(...) %>%
+        count(...)
+TableRace
+```
+
+Now calculate the following probabilities: 1) for a White woman to have a White partner, 2) for a White woman to have a non-White partner, 3) for a non-White woman to have a White partner, 4) for a non-White woman to have a non-White partner.
+
+Of course, you can simply calculate these numbers manually. However, the code will not be reproducible: if the data change the code will need to be changed, too. Your task is to write reproducible code producing a table with the required four probabilities.
+
+
+```{r}
+TableRace %>%
+        # group by ego's race to calculate sums
+        group_by(...) %>%
+        # create a new variable with the total number of women by race
+        mutate(...) %>%
+        # create a new variable with the required probabilities 
+        mutate(...)
+```
+
+## Join with household data and calculate mean and median number of children by ethnic group (30 points)
+
+1) Join the individual-level file with the household-level data from wave 8 (specifically, we want the variable for the number of children in the household).
+2) Select only couples that are ethnically endogamous (i.e. partners come from the same ethnic group) for the following groups: White British, Indian, and Pakistani.
+3) Produce a table showing the mean and median number of children in these households by ethnic group (make sure the table has meaningful labels for ethnic groups, not just numerical codes).
+4) Write a short interpretation of your results. What could affect your findings?
+
+```{r}
+...
+
+```
+
+**Part III.**
+
+## Read data
+
+First we want to read and join the data for the first 7 waves of the Understanding Society. (Wave 8 does not have a variable for political interest). We only want five variables: personal identifier, sample origin, sex, age and political interest. It is tedious to join all the seven waves manually, and it makes sense to use a loop in this case. Since you don't yet know about iteration I'll provide the code for you; please also see a video on ELE.
+
+The only thing you need to do for this code to work on your computer is to provide a path to the directory where the data are stored on your computer.
+
+```{r}
+library(vroom)
+# create a vector with the file names and paths
+files <- dir(
+  # Select the folder where the files are stored.
+  "UKDA-6614-tab/tab",
+  # Tell R which pattern you want present in the files it will display.
+  pattern = "indresp",
+  # We want this process to repeat through the entire folder.
+  recursive = TRUE,
+  # And finally want R to show us the entire file path, rather than just
+  # the names of the individual files.
+  full.names = TRUE)
+
+files
+
+# Select only files from the UKHLS.
+files <- files[stringr::str_detect(files, "ukhls")]
+files
+
+# Reorder the file paths. 
+files <- files[c(1,3:10,2)]
+files
+
+# create a vector of variable names
+vars <- c("memorig", "sex_dv", "age_dv", "vote6")
+for (i in 1:7) {
+        # Create a vector of the variables with the correct prefix.
+        varsToSelect <- paste(letters[i], vars, sep = "_")
+        # Add pidp to this vector (no prefix for pidp)
+        varsToSelect <- c("pidp", varsToSelect)
+        # Now read the data. 
+        data <- fread(files[i], select = varsToSelect)
+        if (i == 1) {
+                all7 <- data  
+        }
+        else {
+                all7 <- full_join(all7, data, by = "pidp")
+        }
+        # Now we can remove data to free up the memory.
+        rm(data)
+} 
+```
+
+## Reshape data (20 points)
+
+Now we have got the data from all 7 waves in the same data frame **all7** in the wide format. Note that the panel is unbalanced, i.e. we included all people who participated in at least one wave of the survey. Reshape the data to the long format. The resulting data frame should have six columns for six variables.
+
+```{r}
+Long <- all7 %>%
+  ...
+Long
+```
+
+## Filter and recode (20 points)
+
+Now we want to filter the data keeping only respondents from the original UKHLS sample for Great Britain (memorig == 1). We also want to clean the variables for sex (recoding it to "male" or "female") and political interest (keeping the values from 1 to 4 and coding all negative values as missing). Tabulate *sex* and *vote6* to make sure your recodings were correct. 
+
+```{r}
+Long <- Long %>%
+        filter(...) %>%
+        mutate(sex_dv = ...) %>%
+        mutate(vote6 = ...)
+Long %>%
+        ...
+Long %>%
+        ...
+```
+
+## Calculate mean political interest by sex and wave (10 points)
+
+Political interest is an ordinal variable, but we will treat it as interval and calculate mean political interest for men and women in each wave.
+
+```{r}
+meanVote6 <- Long %>%
+        ...
+        
+meanVote6
+```
+
+## Reshape the data frame with summary statistics (20 points)
+
+Your resulting data frame with the means is in the long format. Reshape it to the wide format. It should look like this:
+
+| sex_dv  | a  | b  | c  | d  |  e | f  | g  |
+|---      |--- |--- |--- |--- |--- |--- |--- |
+| female  |    |    |    |    |    |    |    |
+| male    |    |    |    |    |    |    |    |
+
+In the cells of this table you should have mean political interest by sex and wave.
+
+Write a short interpretation of your findings.
+
+```{r}
+meanVote6 %>%
+        ...
+```
+
+## Estimate stability of political interest (30 points)
+
+Political scientists have been arguing how stable the level of political interest is over the life course. Imagine someone who is not interested in politics at all so that their value of *vote6* is always 4. Their level of political interest is very stable over time, as stable as the level of political interest of someone who is always very interested in politics (*vote6* = 1). On the other hand, imagine someone who changes their value of *votes6* from 1 to 4 and back every other wave. Their level of political interest is very unstable.
+
+Let us introduce a measure of stability of political interest that is going to be equal to the sum of the absolute values of changes in political interest from wave to wave. Let us call this measure Delta. It is difficult for me to typeset a mathematical formula in Markdown, but I'll explain this informally.
+
+Imagine a person with the level of political interest that is constant over time: {1, 1, 1, 1, 1, 1, 1}. For this person, Delta is zero.
+
+Now imagine a person who changes once from "very interested in politics" to "fairly interested in politics": {1, 1, 1, 1, 2, 2, 2}. For them, Delta = (1 - 1) + (1 - 1) + (1 - 1) + (2 - 1) + (2 - 2) + (2 - 2) = 1.
+
+Now imagine someone who changes from "very interested in politics" to "not at all interested" every other wave: {1, 4, 1, 4, 1, 4, 1}. Delta = (4 - 1) + abs(1 - 4) + (4 - 1) + abs(1 - 4) + (4 - 1) + abs(1 - 4) = 3 * 6 = 18.
+
+Large Delta indicates unstable political interest. Delta = 0 indicates a constant level of political interest.
+
+Write the R code that does the following.
+
+1. To simplify interpretation, keep only the respondents with non-missing values for political interest in all seven waves.
+2. Calculate Delta for each person in the data set.
+3. Calculate mean Delta for men and women.
+4. Calculate mean Delta by age (at wave 1) and plot the local polynomial curve showing the association between age at wave 1 and mean Delta. You can use either **ggplot2** or the *scatter.smooth()* function from base R.
+5. Write a short interpretation of your findings.
+
+```{r}
+...
+
+```
+
+
+
+
