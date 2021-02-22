@@ -1,0 +1,26 @@
+---
+title: "Data Analysis in Social Science  (22 February)"
+output:
+  github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(vroom)
+```
+
+Exercises.
+
+1) Read the indresp file from Wave 8 and keep the following variables: pidp, derived sex and age (h_sex_dv and h_age_dv), and net personal income (h_fimnnet_dv).
+
+2) Visualise the distribution of income with a histogram, a density plot and a box plot.
+
+3) Visualise the distribution of sex with a bar chart.
+
+    ```{r}
+
+    ```
