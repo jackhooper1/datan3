@@ -22,5 +22,73 @@ Exercises.
 3) Visualise the distribution of sex with a bar chart.
 
     ```{r}
+W8 <- vroom("UKDA-6614-tab/tab/ukhls_w8/h_indresp.tab",
+            col_select = c(pidp, h_sex_dv, h_age_dv, h_fimnnet_dv))
+    
+# histogram
+    
+W8 %>%  
+  ggplot(aes(x = h_fimnnet_dv)) +
+  geom_histogram() +
+  xlim(-500, 10000)
+
+W8 %>%  
+  ggplot(aes(x = log(h_fimnnet_dv))) +
+  geom_histogram()
+
+W8 %>%  
+  ggplot(aes(x = h_fimnnet_dv)) +
+  geom_histogram(bins = 50) +
+  xlim(-500, 10000) +
+  xlab("Net monthly income")
+    
+  # Density curve
+
+W8 %>%  
+  ggplot(aes(x = h_fimnnet_dv)) +
+  geom_density(bw = 1000) +
+  xlim(-500, 10000) +
+  xlab("Net monthly income")
+
+# Box plot
+
+W8 %>%  
+  ggplot(aes(x = h_fimnnet_dv)) +
+  geom_boxplot() +
+  xlim(-500, 10000) +
+  xlab("Net monthly income")
+
+W8 %>%  
+  ggplot(aes(y = h_fimnnet_dv)) +
+  geom_boxplot() +
+  ylim(-500, 10000) +
+  ylab("Net monthly income")
+
+# Bar chart: sex
+
+W8 %>%
+  mutate(sexRecoded = ifelse(h_sex_dv == 1, "men",
+                             ifelse(h_sex_dv == 2, "women", NA))) %>%
+  filter(!is.na(sexRecoded)) %>%
+  ggplot(aes(x = sexRecoded)) +
+  geom_bar()
+
+# Scatter plot: age vs income
+
+W8 %>%
+  ggplot(aes(x = h_age_dv, y = h_fimnnet_dv)) +
+  geom_point(size = 1, position = "jitter") +
+  geom_smooth() +
+  ylim(-500, 10000)
+
+# Line chart: age vs. mean income
+
+W8 %>%
+  group_by(h_age_dv) %>%
+  summarise(
+    meanIncome = mean(h_fimnnet_dv, na.rm = TRUE)
+  ) %>%
+  ggplot(aes(x = h_age_dv, y = meanIncome)) +
+    geom_line()
 
     ```
