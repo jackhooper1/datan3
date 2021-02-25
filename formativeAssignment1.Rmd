@@ -116,7 +116,7 @@ Hh8 <- read_tsv("...h_hhresp.tab")
 
 The **egoalt8** data table contains data on the kin and other relationships between people in the same household. In each row in this table you will have a pair of individuals in the same household: ego (identified by *pidp*) and alter (identified by *apidp*). *h_relationship_dv* shows the type of relationship between ego and alter. You can check the codes in the Understanding Society codebooks here -- https://www.understandingsociety.ac.uk/documentation/mainstage/dataset-documentation.
 
-First we want to select only pairs of individuals who are husbands and wives or cohabiting partners (codes 1 and 2). For convenience, we also want to keep only the variables *pidp*, *apidp*, *h_hidp* (household identifier), *h_relationship_dv*, *h_esex* (ego's sex), and *h_asex* (alter's sex).
+First we want to select only pairs of individuals who are husbands and wives or cohabiting partners (codes 1 and 2). For convenience, we also want to keep only the variables *pidp*, *apidp*, *h_hidp* (household identifier), *h_relationship_dv*, *h_sex* (ego's sex), and *h_asex* (alter's sex).
 
 ```{r}
 Partners8 <- Egoalt8 %>%
@@ -268,7 +268,7 @@ for (i in 1:7) {
         # Add pidp to this vector (no prefix for pidp)
         varsToSelect <- c("pidp", varsToSelect)
         # Now read the data. 
-        data <- fread(files[i], select = varsToSelect)
+        data <- vroom(files[i], col_select = varsToSelect)
         if (i == 1) {
                 all7 <- data  
         }
