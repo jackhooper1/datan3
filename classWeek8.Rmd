@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Exercises.
 
-1) Check if a number is even. If it is print "Even". If it isn't print "Odd". If it's 0 print "Zero".
+1) Check if a number is even. If it is even print "Even". If it isn't print "Odd". If it's 0 print "Zero". (Use the modulus operator %%).
 
 2) Write a for loop finding the largest element of a numeric vector and print it on the screen.
 
@@ -24,5 +24,52 @@ Exercises.
 
 
     ```{r}
+    
+    # Ex.1
+    
+    x <- 2
+    if (x == 0) {
+      print("x is 0")
+    } else if (x %% 2 == 0) {
+      print("x is even")
+    } else {
+      print("x is odd")
+    }
+    
+    # Ex.2 
+    x <- c(2, 6, 1, 8, 2)
+    max_x <- x[1]
+    for (i in seq_along(x)) {
+      if (x[i] > max_x) {
+        max_x <- x[i]
+      }
+    }
+    max_x
+    
+    # Ex.3
+    x <- matrix(c(2, 6, 1, 8, 2, 10, -7, 5, 52, 6), nrow = 2)
+    max_x <- x[1,1]
+    dim(x)
+    for (i in 1:dim(x)[1]) {
+      for (j in 1:dim(x)[2]) {
+        if (x[i,j] > max_x) {
+         max_x <- x[i,j]
+         }
+        }
+      }
 
+    max_x
+    
+    # Ex.4
+    x <- c(12, 6, 1, 8, 2)
+    max_x <- x[1]
+    i <- 2
+    while (i <= length(x)) {
+      if (x[i] > max_x) {
+        max_x <- x[i]
+      }
+    i <- i + 1
+      }
+    max_x
+    
     ```
