@@ -26,6 +26,6 @@ Below are some rules for completing the reports.
 
 5. I do not expect you to present a detailed literature review. That said, you may want to read two or three papers (possibly reviews) published in good journals in the last 10 to 15 years, and summarise the state of art in about two paragraphs of your report.
 
-6. Your reports must be written in R Markdown and show all the code for the analysis (not included in word count). The code must start with reading the Understanding Society data and show all steps of the analysis and the output. You should conduct your analysis as a separate project. Please knit your reports both as a pdf file (to be submitted on Bart).
+6. Your reports must be written in R Markdown and show all the code for the analysis (not included in word count). The code must start with reading the Understanding Society data and show all steps of the analysis and the output. You should conduct your analysis as a separate project. Please knit your report as a pdf or Word file (to be submitted on Bart). Please do not submit an .Rmd file.
 
 
