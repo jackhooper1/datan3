@@ -1,0 +1,29 @@
+---
+title: "Data Analysis in Social Science  (15 March)"
+output:
+  github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Exercises.
+
+1) Create a vector of length 100, randomly drawing it from the standard normal distribution. Find the mean and standard deviation. Multiply the vector by 2. Are the mean and standard deviation going to change?
+
+2) Read the individual wave 10 UndSoc data and extract the variable for age from the data frame. What type is it?
+
+3) Convert sex into a logical vector for being male. Calculate the proportion of men in the data set.
+
+4) Convert sex into a character vector with the values “male” and “female”.
+
+5) Convert sex into a factor. Change the order of levels.
+
+6) Make a list of four elements containing: 1) the vector from exercise 1, 2) the vector from exercise 3, 3) TRUE, 4) a list with your name and your surname.
+
+7) Regress personal income (j_fimnnet_dv) on age and age squared. Extract regression coefficients as a vector.
+
+    ```{r}
+
+    ```
