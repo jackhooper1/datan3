@@ -24,6 +24,80 @@ Exercises.
 
 7) Regress personal income (j_fimnnet_dv) on age and age squared. Extract regression coefficients as a vector.
 
-    ```{r}
+```{r}
+library(tidyverse)
 
-    ```
+# Ex. 1
+
+x <- rnorm(100)
+mean(x)
+sd(x)
+mean(x * 2)
+sd(x * 2)
+
+
+# Ex. 2
+df <- read_tsv("UKDA-6614-tab/tab/ukhls_w10/j_indresp.tab")
+   df %>%
+    pull(j_age_dv) %>%
+    class()
+   
+    df %>%
+      pull(j_age_dv) %>%
+      typeof()
+   
+        
+    df %>%
+      pull(j_age_dv) %>%
+      as.integer() %>%
+      typeof()
+
+# Ex. 3
+    df %>%
+      pull(j_sex) %>% class()
+    
+   df %>%
+      mutate(j_male = ifelse(j_sex == 1, TRUE, FALSE)) %>%
+      pull(j_male) %>% class()
+   
+   df %>%
+      mutate(j_male = ifelse(j_sex == 1, TRUE, FALSE)) %>%
+     pull(j_male) %>% mean()
+   
+      df %>%
+      mutate(j_male = ifelse(j_sex == 1, TRUE, FALSE)) %>%
+      summarise(
+        propMen = mean(j_male)
+      )
+   
+# Ex. 4
+      df %>%
+      mutate(j_sexChr = ifelse(j_sex == 1, "male", 
+                             ifelse(j_sex == 2, "female", NA))) %>%
+      pull(j_sexChr) %>% class()
+      
+      df %>%
+      mutate(j_sexChr = ifelse(j_sex == 1, "male", 
+                             ifelse(j_sex == 2, "female", NA))) %>%
+      pull(j_sexChr) %>% mean()
+      
+# Ex. 5
+      df %>%
+        mutate(j_sexChr = ifelse(j_sex == 1, "male", 
+                             ifelse(j_sex == 2, "female", NA))) %>%
+        mutate(j_sexFct = factor(j_sexChr)) %>%
+        pull(j_sexFct) %>% class()
+      
+        df %>%
+          mutate(j_sexChr = ifelse(j_sex == 1, "male", 
+                             ifelse(j_sex == 2, "female", NA))) %>%
+          mutate(j_sexFct = factor(j_sexChr)) %>%
+          pull(j_sexFct) %>% mean()
+      
+        df %>%
+          mutate(j_sexChr = ifelse(j_sex == 1, "male", 
+                             ifelse(j_sex == 2, "female", NA))) %>%
+          mutate(j_sexFct = factor(j_sexChr, levels = c("male", "female"))) %>%
+          count(j_sexFct)
+      
+```
