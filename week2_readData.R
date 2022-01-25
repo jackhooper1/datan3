@@ -7,8 +7,9 @@ library(tidyverse)
 # Reading data into R.
 
 # Base R
+setwd("/Users/jackhooper/Desktop/datan3")
 
-W10 <- read.table("UKDA-6614-tab/tab/ukhls_w10/j_indresp.tab")
+W10 <- read.table("UKDA-6614-tab/tab/ukhls/j_indresp.tab")
 
 # How long did it take?
 
