@@ -1,0 +1,114 @@
+---
+title: "Week 2"
+author: "Jack Hooper"
+date: "25/01/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library('vroom')
+```
+
+
+## The Understanding Society questions
+
+1. What is the difference between **indresp** and **indall** files in UndSoc? What kind of information can you find in each?
+
+ * **indresp** files contain only information from adult interviews - individual respondants 
+* **indall** files contain all information from adults, children and non-respondants
+* Vroom can make mistakes but is fast
+* Most of the time use **indresp**
+```{r}
+a_indresp <- vroom("UKDA-6614-tab/tab/ukhls/a_indresp.tab")
+a_indall <- vroom("UKDA-6614-tab/tab/ukhls/a_indall.tab")
+head(a_indresp)
+head(a_indall)
+```
+
+
+1.b. What kind of information can you find in **xwavedat** files?
+
+* Time constant data
+* dv means variable is derived 
+* Month and data of DOB not in this release as it is sensitive
+* Supposed to be anonymous
+* m is maternal information
+* wave specific files contain this info but more reliable to use this file and merge with wave specific file
+
+```{r}
+xwavedat <- vroom("UKDA-6614-tab/tab/ukhls/xwavedat.tab")
+
+head(xwavedat)
+colnames(xwavedat)
+```
+
+
+2. What is the structure of **egoalt** files?
+
+* Kin and other relationships between pairs of individuals in the household
+* Links people together in the household (their relationships)
+* *pidp* is the individual indentifier across waves
+* in this file the individual may have a number of relationships
+* each row = 1 relationship
+* each relationship appears twice (X with Y and Y with X)
+* *hidp* is household identifier
+* household identifier is wave specific as people move houses and split and move in and die
+* BHPS became part of understanding society dataset
+* for some people this data spans 30 years (smaller sample size)
+
+
+https://www.understandingsociety.ac.uk/documentation/mainstage/dataset-documentation/search/datafile/egoalt
+```{r}
+a_egoalt <- read.table("UKDA-6614-tab/tab/ukhls/a_egoalt.tab",header=T)
+head(a_egoalt)
+str
+```
+
+
+* 18 variables *
+
+3. In which files can you find the data on education / highest qualification?
+
+* *qfedhi* contains the highest level of qualification and can be found in *indresp* file
+* more variables can be found in the *indresp* file
+* also qfhigh_dv - highest ever reported education level
+* hiqual_dv
+
+* important to read notes to understand
+* Universe shows you conditions req for people to be included
+
+* In longitudinal studies you don't want to repeat the questions but you want to record if there have been changes. You do need to collect data for new people.
+
+4. What kind of information can you find in the **hhresp** and **hhsamp** files?
+
+* **hhsamp** files contain information about the household (household level qs) and is a non harmonised file - *technical data* languages spoken, duration of interview, number of people over 16
+* **hhresp** files contain information about the household (household level qs)
+
+5. What kind of information can you find in the **newborn** files?
+* DOB, birth weight, sex
+
+6. What is the pidp variable? Why is it important?
+
+* Individual identifier (constant over time)
+
+7. Tell us about the individual with pidp 280165 (sex, age, where they live, etc.).
+
+```{r}
+k_indresp <- vroom("UKDA-6614-tab/tab/ukhls/k_indresp.tab")
+k_indresp$k_sex_dv[k_indresp$pidp==280165]
+k_indresp$k_ppsex[k_indresp$pidp==280165]
+xwavedat$bornuk_dv[xwavedat$pidp==280165]
+```
+* The respondant is female (2 in sex_dv variable)
+* The respondant has a male partner when interviewed (1 ppsex)
+* She was born in the UK
+
+
+
+
+8. Explore the structure of the questionnaires for wave 11 of UndSoc. 
+
+```{r}
