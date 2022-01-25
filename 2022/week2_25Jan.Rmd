@@ -1,0 +1,34 @@
+---
+title: "Week 2. Tasks/exercises for 25 January 2022"
+output:
+  github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## The Understanding Society questions
+
+1. What is the difference between **indresp** and **indall** files in UndSoc? What kind of information can you find in each?
+
+2. What is the structure of **egoalt** files?
+
+3. In which files can you find the data on education / highest qualification?
+
+4. What kind of information can you find in the **hhresp** and **hhsamp** files?
+
+5. What kind of information can you find in the **newborn** files?
+
+6. What is the pidp variable? Why is it important?
+
+7. Tell us about the individual with pidp 280165 (sex, age, where they live, etc.).
+
+8. Explore the structure of the questionnaires for wave 11 of UndSoc. 
+
+```{r}
+# Add code here
+
+```
+
+
