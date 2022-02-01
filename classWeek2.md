@@ -29,8 +29,6 @@ head(USArrests)
 
 1.  Extract a vector with the names of the states.
 
-<!-- end list -->
-
 ``` r
 USArrests
 ```
@@ -123,6 +121,13 @@ class(stateNames)
     ## [1] "character"
 
 ``` r
+stateNames <- as.vector(stateNames)
+class(stateNames)
+```
+
+    ## [1] "character"
+
+``` r
 USArrests$stateNames <- row.names(USArrests)
 USArrests
 ```
@@ -179,10 +184,8 @@ USArrests
     ## Wisconsin         2.6      53       66 10.8      Wisconsin
     ## Wyoming           6.8     161       60 15.6        Wyoming
 
-2.  Create a new data set that only includes states with the murder rate
-    \> 10.
-
-<!-- end list -->
+2.  Create a new data set that only includes states with the murder
+    rate &gt; 10.
 
 ``` r
 USArrests
@@ -302,8 +305,6 @@ subset(USArrests, USArrests$Murder > 10)
 
 3.  Create a new data set that only includes the first 15 states in the
     original data set.
-
-<!-- end list -->
 
 ``` r
 USArrests[1:15,]

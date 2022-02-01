@@ -30,6 +30,8 @@ str(USArrests)
 stateNames <- row.names(USArrests)
 stateNames
 class(stateNames)
+stateNames <- as.vector(stateNames)
+class(stateNames)
 
 USArrests$stateNames <- row.names(USArrests)
 USArrests
