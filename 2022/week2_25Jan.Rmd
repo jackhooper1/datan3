@@ -6,17 +6,55 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(vroom)
 ```
 
 ## The Understanding Society questions
 
 1. What is the difference between **indresp** and **indall** files in UndSoc? What kind of information can you find in each?
 
+```{r q1}
+
+k_indresp <- vroom("UKDA-6614-tab/tab/ukhls/k_indresp.tab")
+k_indall <- vroom("UKDA-6614-tab/tab/ukhls/k_indall.tab")
+
+colnames(k_indresp)
+colnames(k_indall)
+
+```
+
+1b. What kind of information can you find in **xwavedat** files?
+
+```{r q1b}
+
+xwavedat <- vroom("UKDA-6614-tab/tab/ukhls/xwavedat.tab")
+
+head(xwavedat)
+colnames(xwavedat)
+
+```
+
 2. What is the structure of **egoalt** files?
+
+```{r q2}
+
+k_egoalt <- vroom("UKDA-6614-tab/tab/ukhls/k_egoalt.tab")
+
+
+```
 
 3. In which files can you find the data on education / highest qualification?
 
 4. What kind of information can you find in the **hhresp** and **hhsamp** files?
+
+```{r q4}
+
+k_hhresp <- vroom("UKDA-6614-tab/tab/ukhls/k_hhresp.tab")
+k_hhsamp <- vroom("UKDA-6614-tab/tab/ukhls/k_hhsamp.tab")
+
+
+```
 
 5. What kind of information can you find in the **newborn** files?
 
@@ -24,11 +62,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 7. Tell us about the individual with pidp 280165 (sex, age, where they live, etc.).
 
-8. Explore the structure of the questionnaires for wave 11 of UndSoc. 
+```{r q7}
 
-```{r}
-# Add code here
+xwavedat %>%
+  filter(pidp == 280165)
 
 ```
+
+
+8. Explore the structure of the questionnaires for wave 11 of UndSoc. 
+
 
 
