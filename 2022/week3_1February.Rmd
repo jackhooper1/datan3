@@ -15,7 +15,7 @@ library(vroom)
 1. Open the **indresp** file from week 11. Restrict your sample to women aged 18 to 35.
 
 ```{r q1}
-
+k_indresp <- vroom("UKDA-6614-tab/tab/ukhls/k_indresp.tab")
 ```
 
 2. Recode sex in such a way that women are shown as 1 and men are shown as 0.
