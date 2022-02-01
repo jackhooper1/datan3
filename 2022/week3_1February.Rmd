@@ -1,0 +1,57 @@
+---
+title: "Week 3. Tasks/exercises for 1 February 2022"
+output:
+  github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(vroom)
+```
+
+## Data transformation
+
+1. Open the **indresp** file from week 11. Restrict your sample to women aged 18 to 35.
+
+```{r q1}
+
+```
+
+2. Recode sex in such a way that women are shown as 1 and men are shown as 0.
+
+```{r q2}
+```
+
+3. Recode age into the following age groups:  < 25, 26-45, 46-65, >65 years old.
+
+```{r q3}
+
+
+```
+
+4. Create a variable with the following values: "young women" (women aged 16 to 35), "young men" (men aged 16 to 35),
+"mature women" (women aged 35 to 60), "mature men" (men aged 35 to 60). Other cases should be shown as missing. 
+
+```{r q4}
+
+
+```
+
+5. Create a data frame showing the mean and median net income and its standard deviation.
+
+```{r q5}
+
+
+```
+
+6. Summarise mean income by sex. Summarise mean income by sex and age group.
+
+
+```{r q6}
+
+
+```
+
+
+
