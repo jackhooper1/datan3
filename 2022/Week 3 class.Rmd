@@ -1,0 +1,188 @@
+---
+title: "Week 3. Tasks/exercises for 1 February 2022"
+output:
+  github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(vroom)
+```
+
+## Data transformation
+
+1. Open the **indresp** file from week 11. Restrict your sample to women aged 18 to 35.
+
+```{r q1}
+k_indresp <- vroom("UKDA-6614-tab/tab/ukhls/k_indresp.tab")
+
+# Look at dist of data - important because of -9 etc.
+k_indresp %>% 
+  count(k_sex_dv)
+k_indresp %>% 
+  count(k_age_dv)
+
+#Only women and 18-35 inclusive
+filter(k_indresp, k_sex==2, k_dvage>=18 & k_dvage<=35)
+
+#Alternatives
+k_indresp %>%
+  filter(k_sex_dv ==2 & k_age_dv %in% 18:35)
+
+k_indresp %>%
+  filter(k_sex_dv ==2) %>%
+  filter(k_age_dv %in% 18:35)
+
+## Not women aged 18-35 (so still women >35)
+k_indresp %>%
+  filter(!(k_sex_dv ==2 & k_age_dv %in% 18:35))
+
+## Not women or aged 18-35
+k_indresp %>%
+  filter(!(k_sex_dv ==2 | k_age_dv %in% 18:35))
+
+## Select women aged 18 to 20 and men aged 51 to 53
+k_indresp %>%
+  filter(k_sex ==2 & k_dvage %in% 18:20| k_sex ==1 & k_dvage %in% 51:53) %>%
+  count(k_sex, k_dvage)
+
+```
+
+2. Recode sex in such a way that women are shown as 1 and men are shown as 0.
+
+```{r q2}
+
+## First way - ifelse (give new name to new sex variable)
+k_indresp %>%
+  mutate(sex2 = ifelse(k_sex == 1, 0,
+                       ifelse(k_sex == 2, 1, NA))) %>%
+  count(sex2)
+
+## Alternative - case_when - assigns everything else NA - give new name to new sex variable
+
+k_indresp %>%
+  mutate(sex1 = case_when(
+    k_sex_dv ==1 ~ 0,
+    k_sex_dv ==2 ~ 1)
+  ) %>%
+  count(sex1)
+```
+
+3. Recode age into the following age groups:  < 25, 26-45, 46-65, >65 years old.
+
+```{r q3}
+summary(k_indresp$k_dvage)
+# -9 = missing
+# 3 missing values
+
+k_indresp %>%
+  mutate(k_age_dv2 =case_when(
+    k_age_dv <0 ~ NA_character_,
+    k_age_dv %in%  0:25 ~ "<25",
+    k_age_dv %in% 26:45 ~ "26-45",
+    k_age_dv %in% 46:65 ~ "46-65",
+    k_age_dv >65 ~ ">65"
+  )) %>% 
+  count(k_age_dv2)
+
+## Create a variable with the following values: Women aged 18 to 20, all other women,
+## everyone else
+
+## This shows the importance of the first line of code going down!
+
+k_indresp %>%
+  mutate(k_group =case_when(
+    k_sex_dv ==2 & k_age_dv %in% 18:20 ~ "women 18-20",
+    k_sex_dv ==2 ~ "other women",
+    TRUE ~ "everyone else"
+  )) %>%
+  count(k_group)
+
+
+```
+
+4. Create a variable with the following values: "young women" (women aged 16 to 35), "young men" (men aged 16 to 35),
+"older women" (women aged 35 to 60), "older men" (men aged 35 to 60). Other cases should be shown as missing. 
+
+```{r q4}
+k_indresp %>%
+  mutate(k_age_sex_dv3 =case_when(
+    k_sex_dv ==2 & k_age_dv %in% 16:35 ~ "young women",
+    k_sex_dv ==1 & k_age_dv %in% 16:35 ~ "young men",
+    k_sex_dv ==2 & k_age_dv %in% 35:60 ~ "older women",
+    k_sex_dv ==1 & k_age_dv %in% 35:60 ~ "older men"
+  )) %>%
+  count(k_age_sex_dv3)
+
+```
+
+5. Create a data frame showing the mean and median net income and its standard deviation.
+
+```{r q5}
+k_indresp %>%
+count(k_fimnnet_dv)
+
+## Pull out column as vector
+k_indresp %>%
+  pull(k_fimnnet_dv) %>% summary()
+
+k_indresp %>%
+  pull(k_fimnnet_dv) %>% hist(breaks=1000)
+
+k_indresp %>%
+  summarise(
+    mean = mean(k_fimnnet_dv, na.rm =TRUE),
+    median = median(k_fimnnet_dv, na.rm=T),
+    sd =sd(k_fimnnet_dv, na.rm=T))
+
+```
+
+6. Summarise mean income by sex. Summarise mean income by sex and age group.
+
+
+```{r q6}
+
+# sex
+k_indresp %>%
+  mutate(sex1 = case_when(
+    k_sex_dv ==1 ~ "men",
+    k_sex_dv ==2 ~ "women")
+  ) %>%
+  mutate(k_age_dv2 =case_when(
+    k_age_dv <0 ~ NA_character_,
+    k_age_dv %in%  0:25 ~ "<25",
+    k_age_dv %in% 26:45 ~ "26-45",
+    k_age_dv %in% 46:65 ~ "46-65",
+    k_age_dv >65 ~ ">65"
+  )) %>% 
+  filter(!is.na(sex1)) %>%
+group_by(sex1) %>%
+  summarise(
+    mean = mean(k_fimnnet_dv, na.rm =TRUE),
+    median = median(k_fimnnet_dv, na.rm=T),
+    sd =sd(k_fimnnet_dv, na.rm=T))
+
+#sex and age
+k_indresp %>%
+  mutate(sex1 = case_when(
+    k_sex_dv ==1 ~ "men",
+    k_sex_dv ==2 ~ "women")
+  ) %>%
+  mutate(k_age_dv2 =case_when(
+    k_age_dv <0 ~ NA_character_,
+    k_age_dv %in%  0:25 ~ "<25",
+    k_age_dv %in% 26:45 ~ "26-45",
+    k_age_dv %in% 46:65 ~ "46-65",
+    k_age_dv >65 ~ ">65"
+  )) %>% 
+  filter(!is.na(sex1)& !is.na(k_age_dv2)) %>%
+group_by(sex1, k_age_dv2) %>%
+  summarise(
+    mean = mean(k_fimnnet_dv, na.rm =TRUE),
+    median = median(k_fimnnet_dv, na.rm=T),
+    sd =sd(k_fimnnet_dv, na.rm=T))
+```
+
+
+

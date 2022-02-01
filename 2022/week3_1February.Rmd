@@ -16,11 +16,43 @@ library(vroom)
 
 ```{r q1}
 k_indresp <- vroom("UKDA-6614-tab/tab/ukhls/k_indresp.tab")
+
+# Look at dist of data - important because of -9 etc.
+k_indresp %>% 
+  count(k_sex_dv)
+k_indresp %>% 
+  count(k_age_dv)
+
+#Only women and 18-35 inclusive
+filter(k_indresp, k_sex==2, k_dvage>=18 & k_dvage<=35)
+
+#Alternatives
+k_indresp %>%
+  filter(k_sex_dv ==2 & k_age_dv %in% 18:35)
+
+k_indresp %>%
+  filter(k_sex_dv ==2) %>%
+  filter(k_age_dv %in% 18:35)
+
+## Not women aged 18-35 (so still women >35)
+k_indresp %>%
+  filter(!(k_sex_dv ==2 & k_age_dv %in% 18:35))
+
+## Not women or aged 18-35
+k_indresp %>%
+  filter(!(k_sex_dv ==2 | k_age_dv %in% 18:35))
+
+## Select women aged 18 to 20 and men aged 51 to 53
+k_indresp %>%
+  filter(k_sex ==2 & k_dvage %in% 18:20| k_sex ==1 & k_dvage %in% 51:53) %>%
+  count(k_sex, k_dvage)
+
 ```
 
 2. Recode sex in such a way that women are shown as 1 and men are shown as 0.
 
 ```{r q2}
+
 ```
 
 3. Recode age into the following age groups:  < 25, 26-45, 46-65, >65 years old.
