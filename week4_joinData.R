@@ -18,6 +18,7 @@ df2
 df1 %>%
   left_join(df2)
 
+
 # Read R for Data Science, ch.13 (Relational Data): https://r4ds.had.co.nz/relational-data.html
 
 # With the UndSoc data
@@ -27,24 +28,26 @@ df1 %>%
 # Only keep the following variables: person’s unique identifier, sex and age.
 # Are there any inconsistencies in the data?
 
-W1 <- read_tsv("UKDA-6614-tab/tab/ukhls_w1/a_indresp.tab")
+W1 <- read_tsv("UKDA-6614-tab/tab/ukhls/a_indresp.tab")
 W1 <- W1 %>%
   select(pidp, a_sex, a_dvage)
-W2 <- read_tsv("UKDA-6614-tab/tab/ukhls_w2/b_indresp.tab")
+W2 <- read_tsv("UKDA-6614-tab/tab/ukhls/b_indresp.tab")
 W2 <- W2 %>%
   select(pidp, b_sex, b_dvage)
-W3 <- vroom("UKDA-6614-tab/tab/ukhls_w3/c_indresp.tab",
+W3 <- vroom("UKDA-6614-tab/tab/ukhls/c_indresp.tab",
             col_select = c(pidp, c_sex, c_dvage))
-W4 <- vroom("UKDA-6614-tab/tab/ukhls_w4/d_indresp.tab",
+W4 <- vroom("UKDA-6614-tab/tab/ukhls/d_indresp.tab",
             col_select = c(pidp, d_sex, d_dvage))
 
 # Joining: balanced panel
+# Only people who participated in all 4 waves
 Joined <- W1 %>%
   inner_join(W2, by = "pidp") %>%
   inner_join(W3, by = "pidp") %>%
   inner_join(W4, by = "pidp")
 
 # Joining: every individual who ever took part in any of the waves 1 to 4
+# Full join - keeps all people in at least 1 wave
 Joined2 <- W1 %>%
   full_join(W2, by = "pidp") %>%
   full_join(W3, by = "pidp") %>%
@@ -53,12 +56,15 @@ Joined2 <- W1 %>%
 # Checking consistency of coding sex across the waves
 Joined %>%
   count(a_sex, b_sex, c_sex, d_sex)
+## Most people stayed consistently men - men or women - women
+## Most likely the others are coding mistakes
 
 # Pulling out pidp of individuals with inconsistent coding
 Joined %>%
   mutate(sumSex = a_sex + b_sex + c_sex + d_sex) %>%
   filter(sumSex != 8 & sumSex != 4) %>%
   pull(pidp)
+# Without pull(pidp) line -> see values of dataset
 
 # Other options:
 # left_join()
@@ -71,9 +77,9 @@ Joined %>%
 
 # Read data for wave 1
 # household data
-H1 <- vroom("UKDA-6614-tab/tab/ukhls_w1/a_hhresp.tab")
+H1 <- vroom("UKDA-6614-tab/tab/ukhls/a_hhresp.tab")
 # call record data
-CR1 <- vroom("UKDA-6614-tab/tab/ukhls_w1/a_callrec.tab")
+CR1 <- vroom("UKDA-6614-tab/tab/ukhls/a_callrec.tab")
 
 # select required variables
 H1 <- H1 %>% select(a_hidp, a_gor_dv)
@@ -100,8 +106,8 @@ Aggr1
 
 # Now performing the same steps for wave 10.
 
-H10 <- vroom("UKDA-6614-tab/tab/ukhls_w10/j_hhresp.tab")
-CR10 <- vroom("UKDA-6614-tab/tab/ukhls_w10/j_callrec.tab")
+H10 <- vroom("UKDA-6614-tab/tab/ukhls/j_hhresp.tab")
+CR10 <- vroom("UKDA-6614-tab/tab/ukhls/j_callrec.tab")
 
 H10 <- H10 %>% select(j_hidp, j_gor_dv)
 CR10ed <- CR10 %>%
