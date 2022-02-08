@@ -1,0 +1,175 @@
+---
+title: "Week 4. Tasks/exercises for 8 February 2022 (joining data)"
+output:
+  github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(vroom)
+library(ggplot2)
+```
+
+## Joining data
+
+1. Join the **indresp** data from waves 10 and 11, in such a way that a) you keep all the individuals who took part in either of the waves, b) you keep only individuals who took part in both waves, c) you keep the individuals who took part in wave 10.
+
+```{r q1}
+j_indresp <- vroom('UKDA-6614-tab/tab/ukhls/j_indresp.tab')
+k_indresp <- vroom('UKDA-6614-tab/tab/ukhls/k_indresp.tab')
+
+# a)
+j_indresp %>% 
+  full_join(k_indresp, by="pidp")
+
+# b)
+j_indresp %>%
+  inner_join(k_indresp, by="pidp")
+
+# c)
+j_indresp %>%
+  left_join(k_indresp, by="pidp")
+
+j_indresp %>%
+  right_join(k_indresp, by="pidp")
+
+# left join keeps all of first values and looks for the matches in second
+# right join = opposite
+# full join = join all
+# inner join = values same across both
+
+# key is important, primary key = "pidp" 
+# if keys have different name, rename first
+
+#social science should use full-join, if this goes wrong, the whole project affected
+#can take values out manually later
+#computer science remove early as huge datasets
+```
+
+2. Join the **indresp** data from wave 11 and the data on ethnicity from the file with individual time constant characteristics. 
+
+```{r q2}
+xwavedat <- vroom('UKDA-6614-tab/tab/ukhls/xwavedat.tab')
+xwavedat %>%
+  select(ethn_dv, pidp) %>%
+  right_join(k_indresp, by="pidp")
+
+#Only want people from k_indresp
+```
+
+3. Join the household data from waves 10 and 11.
+
+```{r q3}
+j_hhresp <- vroom('UKDA-6614-tab/tab/ukhls/j_hhresp.tab')
+k_hhresp <- vroom('UKDA-6614-tab/tab/ukhls/k_hhresp.tab')
+
+#wave-specific data has prefix
+#household identifier is wave specific (not across waves)
+
+# join at individual level
+# join hh -> individual wave level
+# then join across waves
+
+df10 <- j_indresp %>%
+  left_join(j_hhresp, by="j_hidp") %>%
+  select(pidp, j_hidp, j_nkids05) %>%
+  arrange(j_hidp)
+  
+#match individuals to household
+
+df11 <- k_indresp %>%
+  left_join(k_hhresp, by="k_hidp") %>%
+  select(pidp, k_hidp, k_nkids05) %>%
+  arrange(k_hidp)
+
+#merge the two
+df10 %>% 
+  full_join(df11, by="pidp")
+
+# each line is an individual
+# indall would have been better as this is all people in house, not just surveyed adults (indresp)
+
+```
+
+4. In wave 1 **indresp** data, create a variable for individuals who did not take part in wave 2. Explore the association between sex, age and the probability of sample attrition. (less people in wave 2 than 1) 
+Some people are more likely to not make it to next wave -> how do you keep random probability
+
+```{r q4}
+# filtering joins
+#semi_join
+#anti_join
+a_indresp <- vroom('UKDA-6614-tab/tab/ukhls/a_indresp.tab')
+b_indresp <- vroom('UKDA-6614-tab/tab/ukhls/b_indresp.tab')
+
+df_a_and_b <- a_indresp %>%
+  semi_join(b_indresp, by="pidp") %>%
+  mutate(is_in_b=1) %>%
+  select(pidp, is_in_b)
+
+df <- a_indresp %>%
+  left_join(df_a_and_b, by="pidp") %>%
+  select(pidp, is_in_b, a_sex_dv, a_age_dv) %>%
+  mutate(is_in_b = ifelse(is.na(is_in_b =="NA"),0,1)) %>%
+  mutate(a_sex_dv =ifelse(a_sex_dv ==2, "female",
+                          ifelse(a_sex_dv ==1, "male",NA)))
+
+df %>%
+  summarise(
+    prop_staying = mean(is_in_b)
+  )
+
+#same by sex
+
+df %>%
+  group_by(a_sex_dv) %>%
+  summarise(
+    prop_staying = mean(is_in_b)
+  )
+# age graph
+df %>%
+  ggplot(aes(x=a_age_dv, y= is_in_b)) + geom_smooth()
+
+#linear probability model = binary variable
+lm(data = df, is_in_b ~ a_age_dv + a_sex_dv) %>% summary()
+# non linear so use quadratic
+lm(data = df, is_in_b ~ I(a_age_dv^2) + a_sex_dv) %>% summary()
+#interaction term
+lm(data = df, is_in_b ~ I(a_age_dv^2) + a_age_dv * a_sex_dv) %>% summary()
+```
+
+5. In wave 11 data, identify married White British women who live in the same household with their husbands and children. Create a table showing the distribution of ethnicities of their husbands and children. 
+
+```{r q5}
+# relationship =egoalt file
+k_egoalt <- read_tsv("UKDA-6614-tab/tab/ukhls/k_egoalt.tab")
+
+h_and_w <- k_egoalt %>% 
+  filter(k_relationship_dv == 1) %>% 
+  filter(k_sex == 2) %>% 
+  select(pidp, apidp, k_relationship_dv, k_sex)
+
+parents <- h_and_w %>% 
+  left_join(xwavedat, by = "pidp") %>% 
+  select(pidp, apidp, k_relationship_dv, k_sex, ethn_dv) %>%
+  rename(f_ethn_dv = ethn_dv) %>%
+  left_join(xwavedat, by = c("apidp" = "pidp")) %>% 
+  select(pidp, apidp, k_relationship_dv, k_sex, f_ethn_dv, ethn_dv) %>%
+  rename(m_ethn_dv = ethn_dv) %>% 
+  filter(f_ethn_dv == 1) %>% 
+  count(m_ethn_dv) %>% 
+  arrange(-n)
+
+parents
+
+children <- k_egoalt %>%
+  filter(k_relationship_dv==4) %>%
+  select(pidp, apidp, k_relationship_dv) %>%
+  rename(children_pidp=pidp)
+
+
+parents %>%
+  left_join(children, by=c("pidp","adipd"))
+
+```
+
