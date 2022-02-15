@@ -1,0 +1,136 @@
+---
+title: "Week 5. Tasks/exercises for 15 February 2022 (reshaping data)"
+output:
+  github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(vroom)
+```
+
+Any data table can be changed to three columns:
+ID, column, value
+(pivot_longer)
+
+## Reshaping data
+
+1. Join the data from waves 9 to 11 from the **indresp** files and reshape to the long format. Include the variables for age, sex and life satisfaction (sclfsato).
+
+
+```{r q1}
+w9 <- vroom("UKDA-6614-tab/tab/ukhls/i_indresp.tab",
+            col_select = c(pidp, i_sex_dv, i_age_dv, i_sclfsato))
+w10 <- vroom("UKDA-6614-tab/tab/ukhls/j_indresp.tab",
+            col_select = c(pidp, j_sex_dv, j_age_dv, j_sclfsato))
+w11 <- vroom("UKDA-6614-tab/tab/ukhls/k_indresp.tab",
+            col_select = c(pidp, k_sex_dv, k_age_dv, k_sclfsato))
+
+w9_11 <- w9 %>% 
+  full_join(w10, by="pidp") %>%
+  full_join(w11, by="pidp")
+w9_11
+
+?pivot_longer
+
+w9_11 <- w9_11 %>%
+  pivot_longer(cols = i_sex_dv:k_sclfsato, names_to ="variable", values_to="value") %>%
+  separate(variable, into=c("wave", "variable"),sep="_",extra="merge") %>% #into = new col names,
+  #variable = names_to #sep=seperator #extra=what to do with extra bits
+  pivot_wider(names_from=variable, values_from = value)
+
+#Now we have a person/wave
+```
+
+2. Add the variable for lag life satisfaction (life satisfaction in previous wave).
+
+```{r q2}
+w9_11 <- w9_11 %>%
+  group_by(pidp) %>%
+  mutate(laglife = lag(sclfsato)) 
+# window functions allow you to work something out without having to reshape data
+
+# find mean for each pidp (person)
+w9_11 %>%
+  group_by(pidp) %>%
+  summarise(mean= mean(sclfsato, na.rm=T)) 
+```
+
+
+3. Reshape the data back to the wide format. Produce a table with the distribution for the number of waves individuals participated in.
+
+
+```{r q3}
+
+# go longer before wider
+w9_11 %>%
+pivot_longer(cols = sex_dv:sclfsato, names_to ="variable", values_to="value") %>%
+  unite(wave:variable, col="variable") %>%
+  pivot_wider(names_from =variable, values_from=value)
+
+```
+
+4. Join the **indresp** data from all 11 waves of the Understanding Society and reshape to the long format. Only keep the variables for pidp, sex, age, region (gor_dv) and life satisfaction.
+
+
+```{r q4}
+# create a vector with the file names and paths
+files <- dir(
+  # Select the folder where the files are stored.
+  "UKDA-6614-tab/tab/ukhls",
+  # Tell R which pattern you want present in the files it will display.
+  pattern = "indresp",
+  # And finally want R to show us the entire file path, rather than just
+  # the names of the individual files.
+  full.names = TRUE)
+
+files
+
+vars <- c("sex_dv", "age_dv", "gor_dv", "sclfsato")
+vars
+
+for (i in 1:11) {
+  # Create a vector of the variables with the correct prefix.
+  varsToSelect <- paste(letters[i], vars, sep = "_")
+  # Add pidp to this vector (no prefix for pidp)
+  varsToSelect <- c("pidp", varsToSelect)
+  # Now read the data. 
+  data <- vroom(files[i], col_select = varsToSelect)
+  if (i == 1) {
+    all11 <- data  
+  }
+  else {
+    all11 <- full_join(all11, data, by = "pidp")
+  }
+
+} 
+
+all11
+
+all11long <- all11 %>%
+  pivot_longer(cols = a_sex_dv:k_sclfsato, names_to ="variable", values_to="value") %>%
+  separate(variable, into=c("wave", "variable"),sep="_",extra="merge") %>% 
+  pivot_wider(names_from=variable, values_from = value)
+
+all11long
+
+#calculate the number of missed waves for each individual (number of NA characters for sex/age)
+all11long %>%
+  group_by(pidp) %>%
+  summarise(nMissed = sum(is.na(sex_dv))) %>%
+  mutate(nParticipated = 11-nMissed) %>%
+  count(nParticipated)
+
+```
+
+5. Calculate the average life satisfaction by wave and region. Present as a table with regions in rows and waves in columns.
+
+```{r q5}
+all11long %>%
+  group_by(wave, gor_dv) %>%
+  summarise(
+    meanLS = mean(sclfsato, na.rm=T)
+  ) %>%
+  pivot_wider(names_from=wave,values_from=meanLS)
+```
