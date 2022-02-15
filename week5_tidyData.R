@@ -7,6 +7,8 @@
 library(tidyverse)
 library(vroom)
 
+#Nested data - e.g. longitudinal
+
 # simple example
 
 df <- tibble(
@@ -37,11 +39,11 @@ df %>%
 
 # Open the first three waves of data only.
 
-w1 <- vroom("UKDA-6614-tab/tab/ukhls_w1/a_indresp.tab",
+w1 <- vroom("UKDA-6614-tab/tab/ukhls/a_indresp.tab",
             col_select = c(pidp, a_sex_dv, a_age_dv, a_fimnnet_dv))
-w2 <- vroom("UKDA-6614-tab/tab/ukhls_w2/b_indresp.tab",
+w2 <- vroom("UKDA-6614-tab/tab/ukhls/b_indresp.tab",
             col_select = c(pidp, b_sex_dv, b_age_dv, b_fimnnet_dv))
-w3 <- vroom("UKDA-6614-tab/tab/ukhls_w3/c_indresp.tab",
+w3 <- vroom("UKDA-6614-tab/tab/ukhls/c_indresp.tab",
             col_select = c(pidp, c_sex_dv, c_age_dv, c_fimnnet_dv))
 
 # Join the data
@@ -66,6 +68,7 @@ w1_3long <- w1_3 %>%
   separate(variable, into = c("wave", "variable"), sep = "_", extra = "merge") %>%
   pivot_wider(names_from = variable, values_from = value)
 
+w1_3long
 # create variables for income in the previous and subsequent waves
 # lag() and lead() are functions from dplyr
 
