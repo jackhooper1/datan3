@@ -1,7 +1,7 @@
 ---
 title: "Week 5. Tasks/exercises for 15 February 2022 (reshaping data)"
 output:
-  github_document
+  html_document
 ---
 
 ```{r setup, include=FALSE}

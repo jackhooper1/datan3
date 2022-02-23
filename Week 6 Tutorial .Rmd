@@ -1,0 +1,82 @@
+---
+title: "Week 6. Tasks/exercises for 22 February 2022 (visualising data)"
+output:
+  html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(vroom)
+```
+
+## Data visualisation
+Communicate statistical information better through graph over numbers.
+
+1. Read the indresp file from Wave 11 and keep the following variables: pidp, derived sex and age , and net personal income (fimnnet_dv). Visualise the distribution of income with a histogram, a density plot and a box plot.
+
+```{r q1}
+k_indresp <- vroom("UKDA-6614-tab/tab/ukhls/k_indresp.tab",
+            col_select = c(pidp, k_sex_dv, k_age_dv, k_fimnnet_dv))
+
+#always explore variable first
+
+k_indresp %>%
+  pull(k_fimnnet_dv) %>% summary()
+
+k_indresp %>%
+  ggplot(mapping =aes(x=k_fimnnet_dv))+
+  geom_histogram()
+
+# set limits and change bins
+k_indresp %>%
+  ggplot(mapping =aes(x=k_fimnnet_dv))+
+  geom_histogram(bins = 300)+
+  xlim(-1000, 10000)
+
+# take log due to extremes
+
+k_indresp %>%
+  ggplot()+
+  geom_density(mapping =aes(x=k_fimnnet_dv))
+
+k_indresp %>%
+  ggplot()+
+  geom_boxplot(mapping =aes(x=k_fimnnet_dv))
+
+```
+
+2. Visualise the distribution of sex with a bar chart. Create a variable for age groups and visualise the distribution by age, both as a continuous and categorical variable.
+
+```{r q2}
+k_indresp %>%
+  count(k_sex_dv)
+k_indresp <- k_indresp %>%
+  mutate(sex = case_when(
+    k_sex_dv == 1 ~ 1,
+    k_sex_dv == 2 ~ 2
+  ))
+
+k_indresp %>%
+  count(sex)
+
+k_indresp %>%
+  ggplot(mapping=aes(sex))+
+  geom_bar()
+
+```
+
+3. Think of the best way to visualise the relationship between sex and income.
+
+```{r q3}
+```
+
+4. Think of the best way to visualise the relationship between age and income.
+
+```{r q4}
+```
+
+5. Visualise the joint distribution of age, sex and income.
+
+```{r q5}
+```
