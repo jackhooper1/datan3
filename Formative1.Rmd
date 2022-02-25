@@ -137,18 +137,19 @@ First we want to select only pairs of individuals who are husbands and wives or 
 
 ```{r}
 Partners8 <- Egoalt8 %>%
-        filter(...) %>%
-        select(...)
+        filter(h_relationship_dv==1|h_relationship_dv==2) %>%
+        select(pidp, apidp, h_hidp, h_relationship_dv, h_sex, h_asex)
+head(Partners8)
 ```
 
 Each couple now appears in the data twice: 1) with one partner as ego and the other as alter, 2) the other way round. Now we will only focus on heterosexual couples, and keep one observation per couple with women as egos and men as their alters.
 
 ```{r}
 Hetero8 <- Partners8 %>%
-        # filter out same-sex couples
-        filter(...) %>%
         # keep only one observation per couple with women as egos
-        filter(...)
+        filter(h_sex==2) %>%
+        # filter out same-sex couples
+        filter(h_asex==1)
 ```
 
 ## Recode data on ethnicity (10 points)
@@ -157,7 +158,7 @@ In this assignment we will explore ethnic endogamy, i.e. marriages and partnersh
 
 ```{r}
 Stable2 <- Stable %>%
-        select(...)
+        select(pidp, racel_dv)
 ```
 
 Let's code missing values on ethnicity (-9) as NA.
@@ -171,7 +172,8 @@ Now let us recode the variable on ethnicity into a new binary variable with the 
 
 ```{r}
 Stable2 <- Stable2 %>%
-        mutate(race = ...)
+        mutate(race = ifelse(racel_dv==1|racel_dv==2 |racel_dv==3|racel_dv==4,1,0)
+        )
 ```
 
 ## Join data (30 points)
@@ -179,8 +181,11 @@ Stable2 <- Stable2 %>%
 Now we want to join data from the household roster (*Hetero8*) and the data table with ethnicity (*Stable2*). First let us merge in the data on ego's ethnicity. We want to keep all the observations we have in *Hetero8*, but we don't want to add any other individuals from *Stable2*.
 
 ```{r}
+Hetero8 %>% summary()
+Stable2 %>% summary()
+
 JoinedEthn <- Hetero8 %>%
-        ...
+  left_join(Stable2, by='pidp')
 ```
 
 Let us rename the variables for ethnicity to clearly indicate that they refer to egos.
@@ -194,16 +199,24 @@ JoinedEthn <- JoinedEthn %>%
 Now let us merge in the data on alter's ethnicity. Note that in this case the key variables have different names in two data tables; please refer to the documentation for your join function (or the relevant section from R for Data Science) to check the solution for this problem.
 
 ```{r}
-JoinedEthn <- JoinedEthn %>%
-        ...
+JoinedEthn <- Stable2 %>%
+  rename(apidp = pidp) %>%
+  rename(alterRace = race) %>%
+  rename(alterRacel_dv = racel_dv) %>%
+  select(apidp, alterRace, alterRacel_dv) %>%
+  right_join(JoinedEthn, by='apidp')
+
 ```
 
 Renaming the variables for alters.
 
 ```{r}
-JoinedEthn <- JoinedEthn %>%
-        rename(alterRacel_dv = racel_dv) %>%
-        rename(alterRace = race)
+#already done 
+#JoinedEthn <- JoinedEthn %>%
+        #rename(alterRacel_dv = racel_dv) %>%
+        #rename(alterRace = race)
+JoinedEthn %>%
+  count(alterRace)
 ```
 
 ## Explore probabilities of racial endogamy (20 points)
@@ -213,9 +226,14 @@ Let us start by looking at the joint distribution of race (White vs. non-White) 
 ```{r}
 TableRace <- JoinedEthn %>%
         # filter out observations with missing data
-        filter(...) %>%
-        count(...)
-TableRace
+        filter(!is.na(alterRace))%>%
+  filter(!is.na(alterRacel_dv)) %>%
+  filter(!is.na(egoRace)) %>%
+  filter(!is.na(egoRacel_dv)) 
+
+TableRace %>%
+  count(alterRace, egoRace)
+
 ```
 
 Now calculate the following probabilities: 1) for a White woman to have a White partner, 2) for a White woman to have a non-White partner, 3) for a non-White woman to have a White partner, 4) for a non-White woman to have a non-White partner.
@@ -225,12 +243,9 @@ Of course, you can simply calculate these numbers manually. However, the code wi
 
 ```{r}
 TableRace %>%
-        # group by ego's race to calculate sums
-        group_by(...) %>%
-        # create a new variable with the total number of women by race
-        mutate(...) %>%
-        # create a new variable with the required probabilities 
-        mutate(...)
+  group_by(egoRace, alterRace) %>%
+  summarise(n = n()) %>%
+  mutate(freq = n / sum(n))
 ```
 
 ## Join with household data and calculate mean and median number of children by ethnic group (30 points)
