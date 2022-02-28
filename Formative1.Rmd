@@ -98,6 +98,8 @@ support
 
 Write a couple of sentences with the interpretation of this result. How this compares with the result of the 2016 referendum? Why?
 
+The 2016 referendum resulted in a larger 'Leave' vote than 'Remain'. This survey seems to indicate that the result would be 'Remain'. This suggests that people may have not responded honestly to the survey question. Could be due to them feeling the 'correct' answer is to vote 'Remain'. This may be supported by the fact that in the survey 10% of respondants either chose not to answer the question or 'missed' it out -"NA".
+
 ## Summarise data by sex and age (30 points)
 
 Now let us look at the support for Leave and Remain by sex and age. Use your newly created variables.
@@ -108,12 +110,19 @@ w8 %>%
   ggplot(mapping=aes(x=EU,fill=sex))+
   geom_histogram(stat = "count")+
   facet_wrap(~agegr)+
-  scale_fill_manual(values=c("pink","blue","orange"))
+  scale_fill_manual(values=c("pink","blue","orange")) +
+  ggtitle("EU support by age and sex")
+
         
 ```
 
 Write a couple of sentences interpreting your results.
 
+Remain =1
+Leave =0
+Age: Above 55yrs, people overwhelming voted to Leave. Below 55, "remain".
+Sex: Fairly equal. Age seems more significant predictor of vote.
+Non-response: Fairly equal across sex, slightly larger as age increases
 
 **Part II.**
 
@@ -255,8 +264,13 @@ TableRace %>%
 3) Produce a table showing the mean and median number of children in these households by ethnic group (make sure the table has meaningful labels for ethnic groups, not just numerical codes).
 4) Write a short interpretation of your results. What could affect your findings?
 
-```{r}
-...
+```{r eval=FALSE, include=FALSE}
+h_indresp %>%
+  select(h_nchild, h_hidp) %>%
+  summary()
+
+Egoalt8 %>%
+  select(h_hidp, h_racel)
 ```
 
 **Part III.**
@@ -267,12 +281,12 @@ First we want to read and join the data for the first 7 waves of the Understandi
 
 The only thing you need to do for this code to work on your computer is to provide a path to the directory where the data are stored on your computer.
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 library(vroom)
 # create a vector with the file names and paths
 files <- dir(
   # Select the folder where the files are stored.
-  "UKDA-6614-tab/tab",
+  "UKDA-6614-tab/tab/ukhls",
   # Tell R which pattern you want present in the files it will display.
   pattern = "indresp",
   # We want this process to repeat through the entire folder.
@@ -311,7 +325,7 @@ for (i in 1:7) {
 
 Now we have got the data from all 7 waves in the same data frame **all7** in the wide format. Note that the panel is unbalanced, i.e. we included all people who participated in at least one wave of the survey. Reshape the data to the long format. The resulting data frame should have six columns for six variables.
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 Long <- all7 %>%
   ...
 Long
@@ -321,7 +335,7 @@ Long
 
 Now we want to filter the data keeping only respondents from the original UKHLS sample for Great Britain (memorig == 1). We also want to clean the variables for sex (recoding it to "male" or "female") and political interest (keeping the values from 1 to 4 and coding all negative values as missing). Tabulate *sex* and *vote6* to make sure your recodings were correct. 
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 Long <- Long %>%
         filter(...) %>%
         mutate(sex_dv = ...) %>%
@@ -336,7 +350,7 @@ Long %>%
 
 Political interest is an ordinal variable, but we will treat it as interval and calculate mean political interest for men and women in each wave.
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 meanVote6 <- Long %>%
         ...
         
@@ -356,7 +370,7 @@ In the cells of this table you should have mean political interest by sex and wa
 
 Write a short interpretation of your findings.
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 meanVote6 %>%
         ...
 ```
@@ -383,6 +397,6 @@ Write the R code that does the following.
 4. Calculate mean Delta by age (at wave 1) and plot the local polynomial curve showing the association between age at wave 1 and mean Delta. You can use either **ggplot2** or the *scatter.smooth()* function from base R.
 5. Write a short interpretation of your findings.
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 ...
 ```
